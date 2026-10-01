@@ -43,7 +43,7 @@
   /* Header */
   .header {
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
   .header h1 {
     font-size: 1.4rem;
@@ -56,6 +56,40 @@
     color: var(--text-soft);
     font-style: italic;
     margin: 0;
+  }
+
+  /* Notificación / Recordatorio en Pantalla Principal */
+  .recordatorio-banner {
+    display: none;
+    background: linear-gradient(135deg, var(--accent-soft), var(--card-bg));
+    border: 1px solid var(--accent);
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 0 15px var(--accent-glow);
+    animation: pulsoAlerta 2s infinite;
+    cursor: pointer;
+  }
+  .recordatorio-banner span {
+    font-size: 1.8rem;
+  }
+  .recordatorio-banner div h4 {
+    margin: 0 0 2px 0;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .recordatorio-banner div p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text);
+  }
+
+  @keyframes pulsoAlerta {
+    0% { border-color: rgba(217, 155, 78, 0.4); }
+    50% { border-color: rgba(217, 155, 78, 1); }
+    100% { border-color: rgba(217, 155, 78, 0.4); }
   }
 
   /* Menú de Botones Principales */
@@ -126,7 +160,6 @@
     gap: 6px;
   }
 
-  /* Estilos comunes de tarjetas y textos */
   h2 { font-size: 1.2rem; color: var(--accent); margin-top: 0; font-weight: 400; }
   p, label { font-size: 0.9rem; color: var(--text-soft); line-height: 1.4; }
 
@@ -245,6 +278,15 @@
     <p>Tu espacio de fe, comunidad y oración</p>
   </div>
 
+  <!-- NOTIFICACIÓN / RECORDATORIO PENDIENTE -->
+  <div id="bannerRecordatorio" class="recordatorio-banner" onclick="showSection('sec-registrar')">
+    <span>🔔</span>
+    <div>
+      <h4>¡Aún no has registrado tu día!</h4>
+      <p>Toca aquí para apartar tu momento de oración y mantener tu racha viva.</p>
+    </div>
+  </div>
+
   <!-- MENU PRINCIPAL -->
   <div id="main-menu" class="menu-grid">
     <button class="menu-btn" onclick="showSection('sec-registrar')"><span>📅</span> Registrar mi día</button>
@@ -333,11 +375,11 @@
     <div style="text-align:center; font-size:2.5rem; margin:20px 0; color:var(--accent);" id="reloj-peregrino">03:00</div>
     <button class="main-btn" onclick="alert('Iniciando tiempo de oración...')">Iniciar Reloj</button>
 
-    <!-- Widget de Revolver Maps Corregido (Visualización por Iframe) -->
+    <!-- Widget de Revolver Maps Directo por Iframe con tu site e66fv8n7ku63 -->
     <div style="margin-top:25px; text-align:center;">
       <p style="font-size:0.8rem; margin-bottom:8px;">Peregrinos conectados en el mundo:</p>
-      <div style="display:inline-block; border-radius:12px; overflow:hidden; border:1px solid var(--border);">
-        <iframe src="//rc.revolvermaps.com/c/7/s6.ico?i=0&amp;m=0&amp;s=180&amp;c=d99b4e&amp;cr1=f1e9da&amp;f=georgia&amp;l=0" width="180" height="180" style="background:#15120e;" scrolling="no" frameborder="0"></iframe>
+      <div style="display:inline-block; border-radius:12px; overflow:hidden; border:1px solid var(--border); background:#0f0d0a; padding:4px;">
+        <iframe src="//rc.revolvermaps.com/w/3/s/a/0/300/0/ffb23f/15120e/ffffff/e66fv8n7ku63.html" width="280" height="280" style="background:transparent;" scrolling="no" frameborder="0"></iframe>
       </div>
     </div>
   </div>
@@ -409,7 +451,7 @@
     }).catch(err => console.error("Error al enviar a Sheets:", err));
   }
 
-  // --- RACHA ---
+  // --- RACHA Y RECORDATORIO VISUAL ---
   function obtenerDatosRacha() {
     return JSON.parse(localStorage.getItem('peregrino_racha')) || { dias: 0, ultimoRegistro: null };
   }
@@ -422,14 +464,18 @@
     const hoy = new Date().toDateString();
     const btnRegistrar = document.getElementById('btn-registrar-hoy');
     const textoEstado = document.getElementById('estado-registro-txt');
+    const bannerRecordatorio = document.getElementById('bannerRecordatorio');
 
     if (data.ultimoRegistro === hoy) {
+      if (bannerRecordatorio) bannerRecordatorio.style.display = 'none';
       if (btnRegistrar) {
         btnRegistrar.innerText = "✓ Oración registrada hoy";
         btnRegistrar.style.background = "#7c9885";
         btnRegistrar.disabled = true;
       }
       if (textoEstado) textoEstado.innerText = "¡Ya cumpliste con tu espacio de hoy! Vuelve mañana.";
+    } else {
+      if (bannerRecordatorio) bannerRecordatorio.style.display = 'flex';
     }
   }
 
@@ -548,8 +594,7 @@
     if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
 
     setTimeout(() => {
-      // Probabilidad ajustada al 1% (0.01)
-      const gano = Math.random() < 0.01;
+      const gano = Math.random() < 0.01; // 1% de probabilidad
 
       if (gano) {
         lanzarModalPremio("¡Felicidades!", "¡Increíble! Has ganado el premio mayor: un Wallpaper Exclusivo de Inspiración.", "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300");
