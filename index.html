@@ -377,9 +377,9 @@
   <div id="sec-video" class="section">
     <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
     <h2>▶ Video del Día</h2>
-    <p>Disfruta de la reflexión espiritual de hoy para fortalecer tu alma.</p>
-    <div style="background:#000; height:180px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#777; margin-top:12px;">
-      [ Reproductor de Video / YouTube ]
+    <p><b>DIOS TE DICE HOY: RECOMPENSARE TUS AÑOS MALOS CON ALEGRÍA | SALMO 90</b></p>
+    <div style="position: relative; width: 100%; padding-bottom: 177.77%; height: 0; background: #000; border-radius: 12px; overflow: hidden; margin-top: 12px;">
+      <iframe src="https://www.youtube.com/embed/JNH2ef1a220" title="Video del Día" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
   </div>
 
@@ -859,27 +859,24 @@
     }
   }
 
-  // --- AUDIO AMBIENTAL ROBUSTO ---
+  // --- AUDIO AMBIENTAL ROBUSTO (HTML5 nativo con control directo) ---
   const music = document.getElementById("bg-music");
   const audioStatus = document.getElementById("audio-status");
   const audioBtn = document.getElementById("audioBtn");
-  let isPlaying = false;
 
   function toggleAudio() {
-    if (isPlaying) {
-      music.pause();
-      audioBtn.textContent = "Reproducir";
-      audioStatus.textContent = "🎵 Música: Pausada";
-      isPlaying = false;
-    } else {
+    if (music.paused) {
       music.play().then(() => {
         audioBtn.textContent = "Pausar";
         audioStatus.textContent = "🎵 Música: Reproduciendo";
-        isPlaying = true;
       }).catch(e => {
         console.log("Error al reproducir audio:", e);
         alert("Toque nuevamente para permitir la reproducción de audio en este navegador.");
       });
+    } else {
+      music.pause();
+      audioBtn.textContent = "Reproducir";
+      audioStatus.textContent = "🎵 Música: Pausada";
     }
   }
 </script>
