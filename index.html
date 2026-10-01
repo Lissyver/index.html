@@ -391,11 +391,11 @@
     </div>
   </div>
 
-  <!-- 4. MIS REGALOS -->
+  <!-- 4. MIS REGALOS (Vacíos hasta que los obtenga) -->
   <div id="sec-regalos" class="section">
     <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
     <h2>🎁 Tus Regalos Desbloqueados</h2>
-    <p>Aquí tienes acceso a las recompensas que vas ganando:</p>
+    <p>Aquí aparecerán tus recompensas a medida que cumplas tus días de racha o ganes en la ruleta.</p>
     <div id="contenedor-lista-regalos" style="margin-top: 15px;"></div>
   </div>
 
@@ -430,12 +430,12 @@
     <h2>⏳ Sendero del Peregrino</h2>
     <p id="instruccion-peregrino">Aparta 8 minutos de silencio y meditación guiada (2 min por etapa).</p>
 
-    <!-- Reproductor de Música Relajante Corregido con ID único -->
+    <!-- Reproductor de Música Relajante con enlace directo y robusto -->
     <div style="background:var(--bg-grad-2); padding:10px 14px; border-radius:12px; border:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; margin-bottom:15px;">
       <span id="audio-status" style="font-size: 0.8rem;">🎵 Música: Pausada</span>
       <button id="audioBtn" onclick="toggleAudio()" style="background:var(--accent); border:none; color:#15120e; padding:6px 14px; border-radius:15px; font-weight:bold; cursor:pointer; font-size:0.8rem;">Reproducir</button>
     </div>
-    <audio id="bg-music" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=meditation-flute-and-water-110904.mp3" preload="auto"></audio>
+    <audio id="bg-music" loop src="https://actions.google.com/sounds/v1/ambiences/rain_heavy.ogg" preload="auto"></audio>
 
     <!-- Los 4 Íconos secuenciales -->
     <div class="peregrino-iconos-grid">
@@ -587,10 +587,7 @@
     const valor = input.value.trim();
     if (!valor) return;
 
-    let visitantes = JSON.parse(localStorage.getItem('peregrino_visitantes')) || [
-      { origen: "Madrid, España", tiempo: "Hace un momento" }
-    ];
-
+    let visitantes = JSON.parse(localStorage.getItem('peregrino_visitantes')) || [];
     visitantes.unshift({ origen: valor, tiempo: "Justo ahora" });
     localStorage.setItem('peregrino_visitantes', JSON.stringify(visitantes));
     input.value = "";
@@ -599,11 +596,14 @@
   }
 
   function cargarVisitantes() {
-    let visitantes = JSON.parse(localStorage.getItem('peregrino_visitantes')) || [
-      { origen: "Madrid, España", tiempo: "Hace un momento" }
-    ];
+    let visitantes = JSON.parse(localStorage.getItem('peregrino_visitantes')) || [];
     const contenedor = document.getElementById('contenedor-visitantes');
     if (!contenedor) return;
+
+    if (visitantes.length === 0) {
+      contenedor.innerHTML = `<p style="font-size:0.8rem; text-align:center; color:var(--text-soft); margin:5px 0;">Sé el primero en registrar de dónde nos visitas.</p>`;
+      return;
+    }
 
     contenedor.innerHTML = "";
     visitantes.forEach(item => {
@@ -616,11 +616,9 @@
     });
   }
 
-  // --- REGALOS ---
+  // --- REGALOS (Vacíos hasta obtenerlos) ---
   function agregarRegalo(tituloRegalo) {
-    let regalos = JSON.parse(localStorage.getItem('peregrino_regalos')) || [
-      { titulo: "📖 Guía de Oración Inicial", enlace: "#" }
-    ];
+    let regalos = JSON.parse(localStorage.getItem('peregrino_regalos')) || [];
     if (!regalos.some(r => r.titulo === tituloRegalo)) {
       regalos.push({ titulo: tituloRegalo, enlace: "#" });
       localStorage.setItem('peregrino_regalos', JSON.stringify(regalos));
@@ -629,18 +627,26 @@
   }
 
   function cargarRegalos() {
-    let regalos = JSON.parse(localStorage.getItem('peregrino_regalos')) || [
-      { titulo: "📖 Guía de Oración Inicial", enlace: "#" }
-    ];
+    let regalos = JSON.parse(localStorage.getItem('peregrino_regalos')) || [];
     const contenedor = document.getElementById('contenedor-lista-regalos');
     if (!contenedor) return;
+
+    if (regalos.length === 0) {
+      contenedor.innerHTML = `
+        <div style="text-align:center; padding: 20px 0; color: var(--text-soft);">
+          <span style="font-size: 2.5rem;">🔒</span>
+          <p style="margin-top: 10px; font-size: 0.9rem;">Aún no tienes premios. Sigue completando tus días de oración o prueba tu fortuna en la Ruleta para desbloquear recompensas exclusivas.</p>
+        </div>
+      `;
+      return;
+    }
 
     contenedor.innerHTML = "";
     regalos.forEach(regalo => {
       contenedor.innerHTML += `
-        <div style="background:var(--bg-grad-2); padding:12px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="background:var(--bg-grad-2); padding:12px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; border: 1px solid var(--accent);">
           <span>${regalo.titulo}</span>
-          <a href="${regalo.enlace}" style="color:var(--accent); text-decoration:none; font-weight:bold; font-size:0.85rem;">Acceder</a>
+          <a href="${regalo.enlace}" style="color:var(--accent); text-decoration:none; font-weight:bold; font-size:0.85rem;">Descargar</a>
         </div>
       `;
     });
@@ -839,7 +845,7 @@
     }
   }
 
-  // --- AUDIO AMBIENTAL CORREGIDO ---
+  // --- AUDIO AMBIENTAL CORREGIDO Y ROBUSTO ---
   const music = document.getElementById("bg-music");
   const audioStatus = document.getElementById("audio-status");
   const audioBtn = document.getElementById("audioBtn");
@@ -858,7 +864,7 @@
         isPlaying = true;
       }).catch(e => {
         console.log("Error al reproducir audio:", e);
-        alert("Toque nuevamente para permitir la reproducción de audio.");
+        alert("La reproducción automática requiere una interacción previa con la pantalla. Inténtalo de nuevo.");
       });
     }
   }
