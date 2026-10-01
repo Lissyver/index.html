@@ -233,7 +233,7 @@
     <button class="menu-btn full" onclick="showSection('sec-intenciones')"><span>💬</span> Tablero de Intenciones</button>
     <button class="menu-btn" onclick="showSection('sec-ruleta')"><span>🎡</span> Ruleta Ganadora</button>
     <button class="menu-btn" onclick="showSection('sec-sendero')"><span>⏳</span> Sendero del Peregrino</button>
-    <button class="menu-btn" onclick="showSection('sec-tienda')"><span>🛍️</span> Tienda</button>
+    <button class="menu-btn" onclick="showSection('sec-tienda')"><span>🛍️️</span> Tienda</button>
     <button class="menu-btn" onclick="showSection('sec-donar')"><span>❤</span> Donar</button>
   </div>
 
@@ -284,16 +284,11 @@
     <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
     <h2>💬 Tablero de Intenciones</h2>
     <p>Comparte tu petición para que otros hermanos oren por ti.</p>
-    <textarea id="input-intencion" placeholder="Escribe tu intención aquí..."></textarea>
+    <textarea id="input-intencion" placeholder="Escribe tu intención aquí... (ej. Por la salud de mi familia)"></textarea>
     <button class="main-btn" style="margin-bottom:20px;" onclick="publicarIntencion()">Publicar intención</button>
 
-    <div class="intencion-card">
-      <p style="color:var(--text); margin:0 0 8px 0;">"Señor, te pido por la salud de mi madre y paz en mi hogar." - <i>Ana M.</i></p>
-      <div class="intencion-actions">
-        <span class="action-chip" onclick="this.innerText='🙏 ' + (parseInt(this.innerText.replace(/\D/g,''))+1)">🙏 127 orando</span>
-        <span class="action-chip">❤️️ 18</span>
-        <span class="action-chip">💬 3</span>
-      </div>
+    <div id="contenedor-lista-intenciones">
+      <!-- Las intenciones aparecerán aquí dinámicamente -->
     </div>
   </div>
 
@@ -362,6 +357,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     actualizarVistaRacha();
+    cargarIntenciones();
   });
 
   function showSection(id) {
@@ -468,7 +464,7 @@
     alert("¡Felicidades! Tu oración de hoy ha sido guardada y tu racha ha aumentado.");
   }
 
-  // --- PUBLICAR INTENCIÓN ---
+  // --- TABLERO DE INTENCIONES ---
   function publicarIntencion() {
     const textoIntencion = document.getElementById('input-intencion').value.trim();
     if (!textoIntencion) {
@@ -476,12 +472,61 @@
       return;
     }
 
+    let intenciones = JSON.parse(localStorage.getItem('peregrino_intenciones')) || [
+      { texto: "Señor, te pido por la salud de mi madre y paz en mi hogar.", autor: "Ana M.", orando: 127, corazones: 18 }
+    ];
+
+    intenciones.unshift({
+      texto: textoIntencion,
+      autor: (window.Telegram && window.Telegram.WebApp.initDataUnsafe?.user?.first_name) ? window.Telegram.WebApp.initDataUnsafe.user.first_name : "Peregrino Anónimo",
+      orando: 1,
+      corazones: 1
+    });
+
+    localStorage.setItem('peregrino_intenciones', JSON.stringify(intenciones));
+    document.getElementById('input-intencion').value = "";
+
     // Enviar a Google Sheets
     enviarASheets("Intención", textoIntencion);
 
     if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-    alert("¡Tu intención ha sido publicada y guardada con éxito!");
-    document.getElementById('input-intencion').value = "";
+    alert("¡Tu intención ha sido publicada con éxito!");
+    cargarIntenciones();
+  }
+
+  function cargarIntenciones() {
+    let intenciones = JSON.parse(localStorage.getItem('peregrino_intenciones')) || [
+      { texto: "Señor, te pido por la salud de mi madre y paz en mi hogar.", autor: "Ana M.", orando: 127, corazones: 18 }
+    ];
+
+    const contenedor = document.getElementById('contenedor-lista-intenciones');
+    if (!contenedor) return;
+
+    contenedor.innerHTML = "";
+
+    intenciones.forEach((item, index) => {
+      contenedor.innerHTML += `
+        <div class="intencion-card">
+          <p style="color:var(--text); margin:0 0 8px 0;">"${item.texto}" - <i>${item.autor}</i></p>
+          <div class="intencion-actions">
+            <span class="action-chip" onclick="reaccionarIntencion(${index}, 'orando')">🙏 ${item.orando} orando</span>
+            <span class="action-chip" onclick="reaccionarIntencion(${index}, 'corazones')">❤️ ${item.corazones}</span>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  function reaccionarIntencion(index, tipo) {
+    let intenciones = JSON.parse(localStorage.getItem('peregrino_intenciones')) || [];
+    if (intenciones[index]) {
+      if (tipo === 'orando') intenciones[index].orando += 1;
+      if (tipo === 'corazones') intenciones[index].corazones += 1;
+      
+      localStorage.setItem('peregrino_intenciones', JSON.stringify(intenciones));
+      cargarIntenciones();
+      if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }
   }
 
   // --- FUNCIÓN DE PREMIOS CON CONFETI ---
