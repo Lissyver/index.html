@@ -433,12 +433,15 @@
     <h2>⏳ Sendero del Peregrino</h2>
     <p id="instruccion-peregrino">Aparta 8 minutos de silencio y meditación guiada (2 min por etapa).</p>
 
-    <!-- Reproductor de Música Relajante -->
+    <!-- Reproductor de Música Relajante con control robusto y directo -->
     <div style="background:var(--bg-grad-2); padding:10px 14px; border-radius:12px; border:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; margin-bottom:15px;">
       <span id="audio-status" style="font-size: 0.8rem;">🎵 Música: Pausada</span>
       <button id="audioBtn" onclick="toggleAudio()" style="background:var(--accent); border:none; color:#15120e; padding:6px 14px; border-radius:15px; font-weight:bold; cursor:pointer; font-size:0.8rem;">Reproducir</button>
     </div>
-    <audio id="bg-music" loop src="https://actions.google.com/sounds/v1/ambiences/rain_heavy.ogg" preload="auto"></audio>
+    <!-- Elemento de audio con pista estable y accesible -->
+    <audio id="bg-music" loop preload="auto">
+      <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=meditation-flute-and-water-110904.mp3" type="audio/mpeg">
+    </audio>
 
     <!-- Los 4 Íconos secuenciales -->
     <div class="peregrino-iconos-grid">
@@ -474,17 +477,19 @@
     </div>
   </div>
 
-  <!-- 9. DONAR (Actualizado con mensaje y cuentas de Binance y PayPal) -->
+  <!-- 9. DONAR (Con botones separados de Binance y PayPal) -->
   <div id="sec-donar" class="section">
     <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
     <h2>❤ Apoya este Ministerio</h2>
     <p style="line-height: 1.5; margin-bottom: 20px;">
-      Si gustas colaborar con el canal para seguir llevándoles gratis la palabra, puedes hacerlo a través de nuestras vías oficiales de apoyo. ¡Dios te bendiga por tu generosidad!<br><br>
+      Si gustas colaborar con el canal para seguir llevándoles gratis la palabra, puedes hacerlo a través de nuestros enlaces oficiales. ¡Dios te bendiga por tu generosidad!<br><br>
       También puedes colaborar adquiriendo nuestros productos en la sección de la <b>Tienda</b>.
     </p>
     
+    <!-- Botón PayPal -->
     <a href="https://www.paypal.com/paypalme/my/profile" target="_blank" class="main-btn" style="margin-bottom: 12px; background: #0070ba; color: white;">Donar con PayPal 🌐</a>
     
+    <!-- Botón Binance -->
     <a href="https://app.binance.com/uni-qr/uEYB3enK" target="_blank" class="main-btn" style="background: #f0b90b; color: #15120e;">Donar con Binance 🪙</a>
   </div>
 
@@ -854,7 +859,7 @@
     }
   }
 
-  // --- AUDIO ---
+  // --- AUDIO AMBIENTAL ROBUSTO ---
   const music = document.getElementById("bg-music");
   const audioStatus = document.getElementById("audio-status");
   const audioBtn = document.getElementById("audioBtn");
@@ -873,7 +878,7 @@
         isPlaying = true;
       }).catch(e => {
         console.log("Error al reproducir audio:", e);
-        alert("La reproducción automática requiere una interacción previa con la pantalla. Inténtalo de nuevo.");
+        alert("Toque nuevamente para permitir la reproducción de audio en este navegador.");
       });
     }
   }
