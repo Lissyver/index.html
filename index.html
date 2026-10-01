@@ -396,9 +396,7 @@
     <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
     <h2>🎁 Tus Regalos Desbloqueados</h2>
     <p>Aquí tienes acceso a las recompensas que vas ganando:</p>
-    <div id="contenedor-lista-regalos" style="margin-top: 15px;">
-      <!-- Se llena dinámicamente -->
-    </div>
+    <div id="contenedor-lista-regalos" style="margin-top: 15px;"></div>
   </div>
 
   <!-- 5. TABLERO DE INTENCIONES -->
@@ -432,12 +430,12 @@
     <h2>⏳ Sendero del Peregrino</h2>
     <p id="instruccion-peregrino">Aparta 8 minutos de silencio y meditación guiada (2 min por etapa).</p>
 
-    <!-- Reproductor de Música Relajante -->
+    <!-- Reproductor de Música Relajante Corregido con ID único -->
     <div style="background:var(--bg-grad-2); padding:10px 14px; border-radius:12px; border:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; margin-bottom:15px;">
-      <span id="audio-status" style="font-size: 0.8rem;">🎵 Música ambiental: Pausada</span>
-      <button onclick="toggleAudio()" style="background:var(--accent); border:none; color:#15120e; padding:6px 12px; border-radius:15px; font-weight:bold; cursor:pointer; font-size:0.8rem;">Reproducir</button>
+      <span id="audio-status" style="font-size: 0.8rem;">🎵 Música: Pausada</span>
+      <button id="audioBtn" onclick="toggleAudio()" style="background:var(--accent); border:none; color:#15120e; padding:6px 14px; border-radius:15px; font-weight:bold; cursor:pointer; font-size:0.8rem;">Reproducir</button>
     </div>
-    <audio id="bg-music" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=meditation-flute-and-water-110904.mp3"></audio>
+    <audio id="bg-music" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=meditation-flute-and-water-110904.mp3" preload="auto"></audio>
 
     <!-- Los 4 Íconos secuenciales -->
     <div class="peregrino-iconos-grid">
@@ -841,24 +839,28 @@
     }
   }
 
-  // --- AUDIO ---
+  // --- AUDIO AMBIENTAL CORREGIDO ---
   const music = document.getElementById("bg-music");
   const audioStatus = document.getElementById("audio-status");
+  const audioBtn = document.getElementById("audioBtn");
   let isPlaying = false;
 
   function toggleAudio() {
-    const btnAudio = event.target;
     if (isPlaying) {
       music.pause();
-      btnAudio.textContent = "Reproducir";
-      audioStatus.textContent = "🎵 Música ambiental: Pausada";
+      audioBtn.textContent = "Reproducir";
+      audioStatus.textContent = "🎵 Música: Pausada";
+      isPlaying = false;
     } else {
       music.play().then(() => {
-        btnAudio.textContent = "Pausar";
-        audioStatus.textContent = "🎵 Música ambiental: Reproduciendo";
-      }).catch(e => console.log("Error al reproducir audio:", e));
+        audioBtn.textContent = "Pausar";
+        audioStatus.textContent = "🎵 Música: Reproduciendo";
+        isPlaying = true;
+      }).catch(e => {
+        console.log("Error al reproducir audio:", e);
+        alert("Toque nuevamente para permitir la reproducción de audio.");
+      });
     }
-    isPlaying = !isPlaying;
   }
 </script>
 
