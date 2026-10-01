@@ -391,7 +391,7 @@
     </div>
   </div>
 
-  <!-- 4. MIS REGALOS (Actualizado Dinámicamente) -->
+  <!-- 4. MIS REGALOS -->
   <div id="sec-regalos" class="section">
     <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
     <h2>🎁 Tus Regalos Desbloqueados</h2>
@@ -426,7 +426,7 @@
     <p id="textoEstadoRuleta" style="text-align:center; font-size:0.8rem; margin-top:8px;"></p>
   </div>
 
-  <!-- 7. SENDERO DEL PEREGRINO (8 Minutos / 2 min por etapa + Música) -->
+  <!-- 7. SENDERO DEL PEREGRINO -->
   <div id="sec-sendero" class="section">
     <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
     <h2>⏳ Sendero del Peregrino</h2>
@@ -457,9 +457,7 @@
         <input type="text" id="input-origen" placeholder="Ciudad o país (ej. Bogotá, Colombia)">
         <button class="main-btn" style="margin-top:0; width:auto; padding:0 15px;" onclick="registrarOrigen()">Añadir</button>
       </div>
-      <div class="visitors-list" id="contenedor-visitantes">
-        <!-- Historial de origen -->
-      </div>
+      <div class="visitors-list" id="contenedor-visitantes"></div>
     </div>
   </div>
 
@@ -585,7 +583,7 @@
     alert("¡Felicidades! Tu oración de hoy ha sido guardada.");
   }
 
-  // --- REGISTRO DE ORIGEN (VISITANTES) ---
+  // --- REGISTRO DE ORIGEN ---
   function registrarOrigen() {
     const input = document.getElementById('input-origen');
     const valor = input.value.trim();
@@ -620,13 +618,11 @@
     });
   }
 
-  // --- SISTEMA DE REGALOS DINÁMICO ---
+  // --- REGALOS ---
   function agregarRegalo(tituloRegalo) {
     let regalos = JSON.parse(localStorage.getItem('peregrino_regalos')) || [
       { titulo: "📖 Guía de Oración Inicial", enlace: "#" }
     ];
-
-    // Evitar duplicados exactos si gana el mismo wallpaper
     if (!regalos.some(r => r.titulo === tituloRegalo)) {
       regalos.push({ titulo: tituloRegalo, enlace: "#" });
       localStorage.setItem('peregrino_regalos', JSON.stringify(regalos));
@@ -712,7 +708,7 @@
     }
   }
 
-  // --- RULETA (1% de probabilidad de ganar, 1 giro diario) ---
+  // --- RULETA ---
   function verificarEstadoRuleta() {
     const hoy = new Date().toDateString();
     const ultimoGiro = localStorage.getItem('peregrino_ultimo_giro');
@@ -744,7 +740,7 @@
     if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
 
     setTimeout(() => {
-      const gano = Math.random() < 0.01; // 1% de probabilidad
+      const gano = Math.random() < 0.01;
 
       if (gano) {
         premioGanadoTemp = "🖼️ Wallpaper Exclusivo de Inspiración";
@@ -776,7 +772,7 @@
     document.getElementById('modalPremio').style.display = 'none';
   }
 
-  // --- SENDERO DEL PEREGRINO (8 Minutos / 4 Etapas de 2 Min + Música) ---
+  // --- SENDERO ---
   let temporizadorIntervalo = null;
   const FASES_TEXTOS = [
     "Etapa 1: Silencio y Desconexión (2 min)",
@@ -788,7 +784,7 @@
   function iniciarSenderoPeregrino() {
     if (temporizadorIntervalo) return;
 
-    let tiempoEtapaSegundos = 120; // 2 minutos exactos por etapa
+    let tiempoEtapaSegundos = 120;
     let etapaActualIndex = 0;
     const relojElemento = document.getElementById('reloj-peregrino');
     const instruccionElemento = document.getElementById('instruccion-peregrino');
@@ -825,7 +821,7 @@
           enviarASheets("Sendero del Peregrino", "Completó los 8 minutos de meditación guiada");
           return;
         }
-        tiempoEtapaSegundos = 120; // Reiniciar contador para los siguientes 2 minutos
+        tiempoEtapaSegundos = 120;
         actualizarIconosFase(etapaActualIndex);
         instruccionElemento.innerText = FASES_TEXTOS[etapaActualIndex];
       }
@@ -845,7 +841,7 @@
     }
   }
 
-  // --- CONTROL DE AUDIO AMBIENTAL ---
+  // --- AUDIO ---
   const music = document.getElementById("bg-music");
   const audioStatus = document.getElementById("audio-status");
   let isPlaying = false;
