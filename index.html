@@ -1,729 +1,317 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Cada Día con Dios - Mini App</title>
-<!-- SDK de Telegram Web App -->
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<!-- Librería de Confeti -->
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<style>
-  :root {
-    --bg: #15120e;
-    --bg-grad-1: #1f1912;
-    --bg-grad-2: #0f0d0a;
-    --card-bg: #211b14;
-    --text: #f1e9da;
-    --text-soft: #a89880;
-    --accent: #d99b4e;
-    --accent-soft: #3a2d1c;
-    --accent-glow: rgba(217, 155, 78, 0.35);
-    --border: #3a3022;
-    --done: #7c9885;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sendero Meditativo</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --accent-color: #38bdf8;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+        }
 
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
 
-  body {
-    margin: 0;
-    min-height: 100vh;
-    background: radial-gradient(ellipse at top, var(--bg-grad-1), var(--bg-grad-2));
-    color: var(--text);
-    font-family: Georgia, 'Times New Roman', serif;
-    padding: 20px;
-    padding-bottom: 50px;
-  }
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            box-sizing: border-box;
+        }
 
-  .app {
-    max-width: 480px;
-    margin: 0 auto;
-  }
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
 
-  /* Header */
-  .header {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  .header h1 {
-    font-size: 1.4rem;
-    color: var(--accent);
-    margin: 0 0 4px 0;
-    font-weight: 400;
-  }
-  .header p {
-    font-size: 0.85rem;
-    color: var(--text-soft);
-    font-style: italic;
-    margin: 0;
-  }
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
 
-  /* Notificación / Recordatorio en Pantalla Principal */
-  .recordatorio-banner {
-    display: none;
-    background: linear-gradient(135deg, var(--accent-soft), var(--card-bg));
-    border: 1px solid var(--accent);
-    border-radius: 16px;
-    padding: 14px 16px;
-    margin-bottom: 20px;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 0 15px var(--accent-glow);
-    animation: pulsoAlerta 2s infinite;
-    cursor: pointer;
-  }
-  .recordatorio-banner span {
-    font-size: 1.8rem;
-  }
-  .recordatorio-banner div h4 {
-    margin: 0 0 2px 0;
-    color: var(--accent);
-    font-size: 0.95rem;
-  }
-  .recordatorio-banner div p {
-    margin: 0;
-    font-size: 0.8rem;
-    color: var(--text);
-  }
+        /* Reproductor de Audio */
+        .audio-player {
+            margin-bottom: 25px;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 10px 15px;
+            border-radius: 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
 
-  @keyframes pulsoAlerta {
-    0% { border-color: rgba(217, 155, 78, 0.4); }
-    50% { border-color: rgba(217, 155, 78, 1); }
-    100% { border-color: rgba(217, 155, 78, 0.4); }
-  }
+        .audio-player button {
+            background: var(--accent-color);
+            border: none;
+            color: #0f172a;
+            font-weight: bold;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
 
-  /* Menú de Botones Principales */
-  .menu-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 24px;
-  }
+        .audio-player button:hover { opacity: 0.85; }
 
-  .menu-btn {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 16px 12px;
-    color: var(--text);
-    font-family: Georgia, serif;
-    font-size: 0.9rem;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s ease;
-    text-align: center;
-  }
+        /* Etapas y Temporizador */
+        .timer-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
 
-  .menu-btn span {
-    font-size: 1.6rem;
-  }
+        #stage-title {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
 
-  .menu-btn:active {
-    transform: scale(0.96);
-    border-color: var(--accent);
-  }
+        #countdown {
+            font-size: 2.5rem;
+            font-weight: bold;
+            font-family: monospace;
+            margin-bottom: 15px;
+        }
 
-  .menu-btn.full {
-    grid-column: span 2;
-    flex-direction: row;
-    justify-content: center;
-  }
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
 
-  /* Secciones */
-  .section {
-    display: none;
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 24px;
-    margin-bottom: 20px;
-  }
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background: var(--accent-color);
+            transition: width 1s linear;
+        }
 
-  .section.active {
-    display: block;
-  }
+        /* Formulario de Origen */
+        .form-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
 
-  .back-btn {
-    background: transparent;
-    border: none;
-    color: var(--accent);
-    font-family: Georgia, serif;
-    font-size: 0.9rem;
-    cursor: pointer;
-    margin-bottom: 16px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(15, 23, 42, 0.6);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
 
-  h2 { font-size: 1.2rem; color: var(--accent); margin-top: 0; font-weight: 400; }
-  p, label { font-size: 0.9rem; color: var(--text-soft); line-height: 1.4; }
+        input[type="text"]:focus {
+            border-color: var(--accent-color);
+        }
 
-  .main-btn {
-    width: 100%;
-    background: var(--accent);
-    color: #1c1409;
-    border: none;
-    border-radius: 50px;
-    padding: 14px;
-    font-size: 0.95rem;
-    font-weight: 700;
-    font-family: Georgia, serif;
-    cursor: pointer;
-    margin-top: 12px;
-  }
+        button.submit-btn {
+            background: var(--accent-color);
+            color: #0f172a;
+            border: none;
+            padding: 0 20px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
 
-  .main-btn:disabled {
-    opacity: 0.7;
-    cursor: default;
-  }
+        button.submit-btn:hover { opacity: 0.85; }
 
-  /* Tablero de intenciones */
-  .intencion-card {
-    background: var(--bg-grad-2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px;
-    margin-bottom: 12px;
-  }
-  .intencion-actions {
-    display: flex;
-    gap: 15px;
-    margin-top: 10px;
-    font-size: 0.85rem;
-  }
-  .action-chip {
-    background: var(--accent-soft);
-    border: 1px solid var(--border);
-    padding: 4px 10px;
-    border-radius: 20px;
-    color: var(--accent);
-    cursor: pointer;
-  }
+        /* Lista de visitantes recientes */
+        .visitors-list {
+            text-align: left;
+            max-height: 140px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-right: 5px;
+        }
 
-  /* RULETA VISUAL */
-  .ruleta-container {
-    text-align: center;
-    position: relative;
-    margin: 20px 0;
-  }
-  .ruleta-circulo {
-    width: 180px;
-    height: 180px;
-    border: 6px solid var(--accent);
-    border-radius: 50%;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 3.5rem;
-    background: var(--bg-grad-2);
-    box-shadow: 0 0 20px var(--accent-glow);
-    transition: transform 3s cubic-bezier(0.15, 0.9, 0.2, 1);
-  }
+        .visitor-tag {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 3px solid var(--accent-color);
+            animation: fadeIn 0.4s ease;
+        }
 
-  /* SENDERO DEL PEREGRINO - ICONOS Y FASES */
-  .peregrino-iconos-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin: 15px 0;
-  }
-  .peregrino-icono-step {
-    background: var(--bg-grad-2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px 4px;
-    text-align: center;
-    font-size: 1.4rem;
-    opacity: 0.4;
-    transition: all 0.3s ease;
-  }
-  .peregrino-icono-step.active {
-    opacity: 1;
-    border-color: var(--accent);
-    background: var(--accent-soft);
-    box-shadow: 0 0 10px var(--accent-glow);
-    transform: scale(1.05);
-  }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-  /* Modal de Premio */
-  .modal-premio {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.85);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-  }
-  .modal-content {
-    background: var(--card-bg);
-    border: 2px solid var(--accent);
-    border-radius: 24px;
-    padding: 30px;
-    text-align: center;
-    max-width: 340px;
-    width: 100%;
-    box-shadow: 0 0 30px var(--accent-glow);
-  }
-  .modal-content img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid var(--accent);
-    margin-bottom: 15px;
-  }
-
-  textarea {
-    width: 100%;
-    background: var(--bg-grad-2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    color: var(--text);
-    padding: 10px;
-    font-family: Georgia, serif;
-    margin-top: 8px;
-    resize: none;
-    height: 80px;
-  }
-</style>
+        /* Scrollbar sutil */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+    </style>
 </head>
 <body>
 
-<div class="app">
-  <div class="header">
-    <h1>🙏 Cada Día con Dios</h1>
-    <p>Tu espacio de fe, comunidad y oración</p>
-  </div>
+    <div class="container">
+        <h1>Sendero Interior</h1>
+        <p class="subtitle">Un viaje de 8 minutos dividido en 4 etapas de profunda calma.</p>
 
-  <!-- NOTIFICACIÓN / RECORDATORIO PENDIENTE -->
-  <div id="bannerRecordatorio" class="recordatorio-banner" onclick="showSection('sec-registrar')">
-    <span>🔔</span>
-    <div>
-      <h4>¡Aún no has registrado tu día!</h4>
-      <p>Toca aquí para apartar tu momento de oración y mantener tu racha viva.</p>
-    </div>
-  </div>
-
-  <!-- MENU PRINCIPAL -->
-  <div id="main-menu" class="menu-grid">
-    <button class="menu-btn" onclick="showSection('sec-registrar')"><span>📅</span> Registrar mi día</button>
-    <button class="menu-btn" onclick="showSection('sec-video')"><span>▶️</span> Video del día</button>
-    <button class="menu-btn" onclick="showSection('sec-racha')"><span>🔥</span> Mi Racha</button>
-    <button class="menu-btn" onclick="showSection('sec-regalos')"><span>🎁</span> Mis Regalos</button>
-    <button class="menu-btn full" onclick="showSection('sec-intenciones')"><span>💬</span> Tablero de Intenciones</button>
-    <button class="menu-btn" onclick="showSection('sec-ruleta')"><span>🎡</span> Ruleta Ganadora</button>
-    <button class="menu-btn" onclick="showSection('sec-sendero')"><span>⏳</span> Sendero del Peregrino</button>
-    <button class="menu-btn" onclick="showSection('sec-tienda')"><span>🛍️</span> Tienda</button>
-    <button class="menu-btn" onclick="showSection('sec-donar')"><span>❤</span> Donar</button>
-  </div>
-
-  <!-- 1. REGISTRAR MI DIA -->
-  <div id="sec-registrar" class="section">
-    <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
-    <h2>📅 Registrar mi día</h2>
-    <p id="estado-registro-txt">Confirma que hoy has apartado tu tiempo de oración para mantener encendida tu racha.</p>
-    <button class="main-btn" id="btn-registrar-hoy" onclick="registrarDiaHoy()">Registrar oración de hoy</button>
-  </div>
-
-  <!-- 2. VIDEO DEL DIA -->
-  <div id="sec-video" class="section">
-    <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
-    <h2>▶ Video del Día</h2>
-    <p>Disfruta de la reflexión espiritual de hoy para fortalecer tu alma.</p>
-    <div style="background:#000; height:180px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#777; margin-top:12px;">
-      [ Reproductor de Video / YouTube ]
-    </div>
-  </div>
-
-  <!-- 3. MI RACHA -->
-  <div id="sec-racha" class="section">
-    <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
-    <h2>🔥 Tu Racha Actual</h2>
-    <div style="text-align: center; padding: 20px 0;">
-      <span style="font-size: 3rem;">🔥</span>
-      <h3 id="racha-numero" style="font-size: 2rem; color: var(--accent); margin: 5px 0;">0 Días</h3>
-      <p>¡Constancia diaria! Cada día cuenta en tu camino espiritual.</p>
-    </div>
-  </div>
-
-  <!-- 4. MIS REGALOS -->
-  <div id="sec-regalos" class="section">
-    <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
-    <h2>🎁 Tus Regalos Desbloqueados</h2>
-    <p>Aquí tienes acceso a los PDFs y recompensas que has ganado:</p>
-    <div style="margin-top: 15px;">
-      <div style="background:var(--bg-grad-2); padding:12px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-        <span>📖 Guía de Oración</span>
-        <a href="#" style="color:var(--accent);">Descargar</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- 5. TABLERO DE INTENCIONES -->
-  <div id="sec-intenciones" class="section">
-    <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
-    <h2>💬 Tablero de Intenciones</h2>
-    <p>Comparte tu petición para que otros hermanos oren por ti.</p>
-    <textarea id="input-intencion" placeholder="Escribe tu intención aquí... (ej. Por la salud de mi familia)"></textarea>
-    <button class="main-btn" style="margin-bottom:20px;" onclick="publicarIntencion()">Publicar intención</button>
-
-    <div id="contenedor-lista-intenciones"></div>
-  </div>
-
-  <!-- 6. RULETA GANADORA -->
-  <div id="sec-ruleta" class="section">
-    <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
-    <h2>🎡 Ruleta Ganadora</h2>
-    <p>Gira la ruleta una vez al día y prueba tu fortuna.</p>
-    
-    <div class="ruleta-container">
-      <div id="ruletaCirculo" class="ruleta-circulo">🎯</div>
-    </div>
-
-    <button class="main-btn" id="btnGirarRuleta" onclick="girarRuleta()">¡Girar la Ruleta!</button>
-    <p id="textoEstadoRuleta" style="text-align:center; font-size:0.8rem; margin-top:8px;"></p>
-  </div>
-
-  <!-- 7. SENDERO DEL PEREGRINO -->
-  <div id="sec-sendero" class="section">
-    <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
-    <h2>⏳ Sendero del Peregrino</h2>
-    <p id="instruccion-peregrino">Aparta 3 minutos de silencio y oración guiada.</p>
-
-    <!-- Los 4 Íconos secuenciales de la oración -->
-    <div class="peregrino-iconos-grid">
-      <div id="icon-step-0" class="peregrino-icono-step active" title="Silencio e Invocación">🕯️</div>
-      <div id="icon-step-1" class="peregrino-icono-step" title="Lectura y Meditación">📖</div>
-      <div id="icon-step-2" class="peregrino-icono-step" title="Petición y Súplica">🙏</div>
-      <div id="icon-step-3" class="peregrino-icono-step" title="Agradecimiento y Paz">🕊️</div>
-    </div>
-    
-    <div style="text-align:center; font-size:2.5rem; margin:15px 0; color:var(--accent); font-weight:bold;" id="reloj-peregrino">03:00</div>
-    <button class="main-btn" id="btn-iniciar-reloj" onclick="iniciarSenderoPeregrino()">Iniciar Tiempo de Oración</button>
-
-    <!-- Widget de Comunidad Global Alternativo (Sin errores de robot) -->
-    <div style="margin-top:25px; background:var(--bg-grad-2); border:1px solid var(--border); border-radius:14px; padding:12px; text-align:center;">
-      <p style="font-size:0.8rem; margin:0 0 4px 0; color:var(--accent);">🌍 Red Mundial de Peregrinos</p>
-      <p style="font-size:0.85rem; color:var(--text); margin:0;">Hay <b>1,428</b> hermanos orando en este momento.</p>
-    </div>
-  </div>
-
-  <!-- 8. TIENDA -->
-  <div id="sec-tienda" class="section">
-    <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
-    <h2>🛍️ Tienda</h2>
-    <p>Adquiere libros, devocionales impresos y recursos exclusivos.</p>
-    <div style="background:var(--bg-grad-2); padding:15px; border-radius:12px; margin-top:12px; text-align:center;">
-      <p style="color:var(--text); font-weight:bold; margin:0 0 5px 0;">Devocional 40 Días en el Desierto</p>
-      <p style="margin:0 0 10px 0;">$12.00 USD</p>
-      <button class="main-btn" style="padding:8px; font-size:0.85rem;">Comprar ahora</button>
-    </div>
-  </div>
-
-  <!-- 9. DONAR -->
-  <div id="sec-donar" class="section">
-    <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
-    <h2>❤ Apoya este Ministerio</h2>
-    <p>Tu donación voluntaria nos ayuda a mantener este espacio activo y llegar a más personas.</p>
-    <button class="main-btn" onclick="alert('¡Gracias por tu generosidad! Redirigiendo a pasarela de pago...')">Donar con Tarjeta / PayPal</button>
-  </div>
-
-</div>
-
-<!-- MODAL DE PREMIO -->
-<div id="modalPremio" class="modal-premio">
-  <div class="modal-content">
-    <img id="imgPremio" src="" alt="Premio">
-    <h2 id="tituloPremio" style="margin:0 0 8px 0;">¡Felicidades!</h2>
-    <p id="descPremio" style="margin:0 0 20px 0;"></p>
-    <button class="main-btn" onclick="cerrarModalPremio()">¡Aceptar! 🎉</button>
-  </div>
-</div>
-
-<script>
-  const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbzhH98vWYHVshdZ82b0cDXpd8QvvFiWGGQzqqs2p9dTmizZrmI441_inUkMdYxFyoacnw/exec";
-
-  const tg = window.Telegram ? window.Telegram.WebApp : null;
-  if (tg) { tg.ready(); tg.expand(); }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    actualizarVistaRacha();
-    cargarIntenciones();
-    verificarEstadoRuleta();
-  });
-
-  function showSection(id) {
-    document.getElementById('main-menu').style.display = 'none';
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-  }
-
-  function showMenu() {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById('main-menu').style.display = 'grid';
-  }
-
-  // --- GOOGLE SHEETS ---
-  function enviarASheets(tipoDato, detalleDato) {
-    if (!URL_GOOGLE_SCRIPT) return;
-    fetch(URL_GOOGLE_SCRIPT, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tipo: tipoDato, detalle: detalleDato })
-    }).catch(err => console.error("Error al enviar a Sheets:", err));
-  }
-
-  // --- RACHA Y RECORDATORIO VISUAL ---
-  function obtenerDatosRacha() {
-    return JSON.parse(localStorage.getItem('peregrino_racha')) || { dias: 0, ultimoRegistro: null };
-  }
-
-  function actualizarVistaRacha() {
-    const data = obtenerDatosRacha();
-    const elementoRachaText = document.getElementById('racha-numero');
-    if (elementoRachaText) elementoRachaText.innerText = data.dias + (data.dias === 1 ? " Día" : " Días");
-
-    const hoy = new Date().toDateString();
-    const btnRegistrar = document.getElementById('btn-registrar-hoy');
-    const textoEstado = document.getElementById('estado-registro-txt');
-    const bannerRecordatorio = document.getElementById('bannerRecordatorio');
-
-    if (data.ultimoRegistro === hoy) {
-      if (bannerRecordatorio) bannerRecordatorio.style.display = 'none';
-      if (btnRegistrar) {
-        btnRegistrar.innerText = "✓ Oración registrada hoy";
-        btnRegistrar.style.background = "#7c9885";
-        btnRegistrar.disabled = true;
-      }
-      if (textoEstado) textoEstado.innerText = "¡Ya cumpliste con tu espacio de hoy! Vuelve mañana.";
-    } else {
-      if (bannerRecordatorio) bannerRecordatorio.style.display = 'flex';
-    }
-  }
-
-  function registrarDiaHoy() {
-    const hoy = new Date().toDateString();
-    let data = obtenerDatosRacha();
-    if (data.ultimoRegistro === hoy) return;
-
-    if (data.ultimoRegistro) {
-      const fechaUltima = new Date(data.ultimoRegistro);
-      const fechaActual = new Date(hoy);
-      const diferenciaDias = Math.floor((fechaActual - fechaUltima) / (1000 * 60 * 60 * 24));
-      if (diferenciaDias === 1) data.dias += 1;
-      else if (diferenciaDias > 1) data.dias = 1;
-    } else {
-      data.dias = 1;
-    }
-
-    data.ultimoRegistro = hoy;
-    localStorage.setItem('peregrino_racha', JSON.stringify(data));
-    enviarASheets("Registro Diario", "Racha actual: " + data.dias + " días");
-    actualizarVistaRacha();
-
-    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-    confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
-    alert("¡Felicidades! Tu oración de hoy ha sido guardada.");
-  }
-
-  // --- SENDERO DEL PEREGRINO (TEMPORIZADOR + 4 ICONOS CADA 45 SEG / 3 MIN TOTAL) ---
-  let temporizadorIntervalo = null;
-  const FASES_TEXTOS = [
-    "1. Silencio e Invocación (Prepárate en presencia de Dios)",
-    "2. Lectura y Meditación de la Palabra",
-    "3. Petición, Súplica y Oración por otros",
-    "4. Agradecimiento, Paz y Clausura"
-  ];
-
-  function iniciarSenderoPeregrino() {
-    if (temporizadorIntervalo) return; // Ya está corriendo
-
-    let tiempoTotalSegundos = 180; // 3 minutos en total
-    const relojElemento = document.getElementById('reloj-peregrino');
-    const instruccionElemento = document.getElementById('instruccion-peregrino');
-    const btnIniciar = document.getElementById('btn-iniciar-reloj');
-
-    btnIniciar.disabled = true;
-    btnIniciar.style.opacity = "0.6";
-    btnIniciar.innerText = "En oración profunda...";
-
-    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-
-    temporizadorIntervalo = setInterval(() => {
-      tiempoTotalSegundos--;
-
-      // Calcular minutos y segundos
-      let minutos = Math.floor(tiempoTotalSegundos / 60);
-      let segundos = tiempoTotalSegundos % 60;
-      relojElemento.innerText = (minutos < 10 ? "0" : "") + minutos + ":" + (segundos < 10 ? "0" : "") + segundos;
-
-      // Actualizar los 4 iconos cada 45 segundos (180s / 4 fases = 45s por fase)
-      let faseActual = Math.floor((180 - tiempoTotalSegundos - 1) / 45);
-      if (faseActual > 3) faseActual = 3;
-      if (faseActual < 0) faseActual = 0;
-
-      actualizarIconosFase(faseActual);
-      if (instruccionElemento && FASES_TEXTOS[faseActual]) {
-        instruccionElemento.innerText = FASES_TEXTOS[faseActual];
-      }
-
-      if (tiempoTotalSegundos <= 0) {
-        clearInterval(temporizadorIntervalo);
-        temporizadorIntervalo = null;
-        relojElemento.innerText = "00:00";
-        instruccionElemento.innerText = "¡Has completado tu Sendero del Peregrino con éxito!";
-        btnIniciar.innerText = "¡Oración Finalizada! 🙏";
-        btnIniciar.style.background = "#7c9885";
-        
-        if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
-        enviarASheets("Sendero del Peregrino", "Completó 3 minutos de oración guiada");
-      }
-    }, 1000);
-  }
-
-  function actualizarIconosFase(indiceActivo) {
-    for (let i = 0; i < 4; i++) {
-      const iconoElem = document.getElementById(`icon-step-${i}`);
-      if (iconoElem) {
-        if (i === indiceActivo) {
-          iconoElem.classList.add('active');
-        } else {
-          iconoElem.classList.remove('active');
-        }
-      }
-    }
-  }
-
-  // --- TABLERO DE INTENCIONES ---
-  function publicarIntencion() {
-    const textoIntencion = document.getElementById('input-intencion').value.trim();
-    if (!textoIntencion) {
-      alert("Por favor escribe una intención antes de publicar.");
-      return;
-    }
-
-    let intenciones = JSON.parse(localStorage.getItem('peregrino_intenciones')) || [
-      { texto: "Señor, te pido por la salud de mi madre y paz en mi hogar.", autor: "Ana M.", orando: 127, corazones: 18 }
-    ];
-
-    intenciones.unshift({
-      texto: textoIntencion,
-      autor: (window.Telegram && window.Telegram.WebApp.initDataUnsafe?.user?.first_name) ? window.Telegram.WebApp.initDataUnsafe.user.first_name : "Peregrino Anónimo",
-      orando: 1,
-      corazones: 1
-    });
-
-    localStorage.setItem('peregrino_intenciones', JSON.stringify(intenciones));
-    document.getElementById('input-intencion').value = "";
-    enviarASheets("Intención", textoIntencion);
-
-    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-    alert("¡Tu intención ha sido publicada con éxito!");
-    cargarIntenciones();
-  }
-
-  function cargarIntenciones() {
-    let intenciones = JSON.parse(localStorage.getItem('peregrino_intenciones')) || [
-      { texto: "Señor, te pido por la salud de mi madre y paz en mi hogar.", autor: "Ana M.", orando: 127, corazones: 18 }
-    ];
-
-    const contenedor = document.getElementById('contenedor-lista-intenciones');
-    if (!contenedor) return;
-
-    contenedor.innerHTML = "";
-    intenciones.forEach((item, index) => {
-      contenedor.innerHTML += `
-        <div class="intencion-card">
-          <p style="color:var(--text); margin:0 0 8px 0;">"${item.texto}" - <i>${item.autor}</i></p>
-          <div class="intencion-actions">
-            <span class="action-chip" onclick="reaccionarIntencion(${index}, 'orando')">🙏 ${item.orando} orando</span>
-            <span class="action-chip" onclick="reaccionarIntencion(${index}, 'corazones')">❤️ ${item.corazones}</span>
-          </div>
+        <!-- Reproductor de música (Audio relajante libre de derechos) -->
+        <div class="audio-player">
+            <span id="audio-status" style="font-size: 0.85rem;">Música ambiental: Pausada</span>
+            <button id="play-music-btn" onclick="toggleAudio()">Reproducir 🎵</button>
         </div>
-      `;
-    });
-  }
+        <!-- Enlace de audio de muestra (puedes cambiarlo por cualquier mp3 enlazado) -->
+        <audio id="bg-music" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=meditation-flute-and-water-110904.mp3"></audio>
 
-  function reaccionarIntencion(index, tipo) {
-    let intenciones = JSON.parse(localStorage.getItem('peregrino_intenciones')) || [];
-    if (intenciones[index]) {
-      if (tipo === 'orando') intenciones[index].orando += 1;
-      if (tipo === 'corazones') intenciones[index].corazones += 1;
-      localStorage.setItem('peregrino_intenciones', JSON.stringify(intenciones));
-      cargarIntenciones();
-    }
-  }
+        <!-- Bloque de Temporizador y Etapas -->
+        <div class="timer-box">
+            <div id="stage-title">Cargando etapa...</div>
+            <div id="countdown">02:00</div>
+            <div class="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+        </div>
 
-  // --- RULETA (1% de probabilidad de ganar, 1 giro diario) ---
-  function verificarEstadoRuleta() {
-    const hoy = new Date().toDateString();
-    const ultimoGiro = localStorage.getItem('peregrino_ultimo_giro');
-    const btnGirar = document.getElementById('btnGirarRuleta');
-    const txtEstado = document.getElementById('textoEstadoRuleta');
+        <!-- Registro de Origen -->
+        <div class="form-group">
+            <input type="text" id="origin-input" placeholder="¿De qué ciudad o país nos visitas? (ej. Buenos Aires)">
+            <button class="submit-btn" onclick="registerOrigin()">Registrar</button>
+        </div>
 
-    if (ultimoGiro === hoy) {
-      btnGirar.disabled = true;
-      btnGirar.style.opacity = "0.5";
-      txtEstado.innerText = "Ya giraste la ruleta hoy. Vuelve mañana para un nuevo intento.";
-    } else {
-      btnGirar.disabled = false;
-      btnGirar.style.opacity = "1";
-      txtEstado.innerText = "¡Tienes 1 giro disponible hoy!";
-    }
-  }
+        <!-- Historial visual -->
+        <div class="visitors-list" id="visitors-container">
+            <div class="visitor-tag"><span>🌍 Madrid, España</span> <span style="color: var(--text-muted); font-size: 0.75rem;">Hace un momento</span></div>
+            <div class="visitor-tag"><span>🌍 Ciudad de México</span> <span style="color: var(--text-muted); font-size: 0.75rem;">Hace 2 min</span></div>
+        </div>
+    </div>
 
-  function girarRuleta() {
-    const hoy = new Date().toDateString();
-    localStorage.setItem('peregrino_ultimo_giro', hoy);
-    verificarEstadoRuleta();
+    <script>
+        // Configuración del Tiempo (Total 8 min = 4 etapas de 2 minutos / 120 segundos cada una)
+        const totalStages = 4;
+        const stageDuration = 120; // 120 segundos = 2 minutos por etapa
+        let currentStage = 1;
+        let timeLeft = stageDuration;
+        let timerInterval = null;
 
-    const ruleta = document.getElementById('ruletaCirculo');
-    const gradosAleatorios = 1080 + Math.floor(Math.random() * 360);
-    ruleta.style.transform = `rotate(${gradosAleatorios}deg)`;
+        const stageNames = [
+            "Etapa 1: La Llegada y Desconexión",
+            "Etapa 2: Respiración y Presencia",
+            "Etapa 3: Expansión y Claridad",
+            "Etapa 4: Integración y Cierre"
+        ];
 
-    if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+        function updateTimerDisplay() {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            document.getElementById("countdown").textContent = 
+                String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0');
+            
+            // Actualizar barra de progreso de la etapa actual
+            let progressPercent = ((stageDuration - timeLeft) / stageDuration) * 100;
+            document.getElementById("progress-bar").style.width = progressPercent + "%";
+            document.getElementById("stage-title").textContent = stageNames[currentStage - 1];
+        }
 
-    setTimeout(() => {
-      const gano = Math.random() < 0.01; // 1% de probabilidad
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft < 0) {
+                    currentStage++;
+                    if (currentStage > totalStages) {
+                        clearInterval(timerInterval);
+                        document.getElementById("stage-title").textContent = "✨ Recorrido Finalizado";
+                        document.getElementById("countdown").textContent = "00:00";
+                        document.getElementById("progress-bar").style.width = "100%";
+                        return;
+                    }
+                    timeLeft = stageDuration;
+                }
+                updateTimerDisplay();
+            }, 1000);
+        }
 
-      if (gano) {
-        lanzarModalPremio("¡Felicidades!", "¡Increíble! Has ganado el premio mayor: un Wallpaper Exclusivo de Inspiración.", "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300");
-        enviarASheets("Ruleta", "¡Ganó premio mayor (1%)!");
-      } else {
-        lanzarModalPremio("¡Sigue intentando!", "Casi lo logras. La constancia trae bendiciones, vuelve mañana para otro intento.", "https://images.unsplash.com/photo-1448375240586-882707db888b?w=300");
-        enviarASheets("Ruleta", "No ganó");
-      }
-    }, 3000);
-  }
+        // Control de Audio
+        const music = document.getElementById("bg-music");
+        const audioBtn = document.getElementById("play-music-btn");
+        const audioStatus = document.getElementById("audio-status");
+        let isPlaying = false;
 
-  function lanzarModalPremio(titulo, descripcion, imagenUrl) {
-    document.getElementById('tituloPremio').innerText = titulo;
-    document.getElementById('descPremio').innerText = descripcion;
-    document.getElementById('imgPremio').src = imagenUrl;
-    document.getElementById('modalPremio').style.display = 'flex';
+        function toggleAudio() {
+            if (isPlaying) {
+                music.pause();
+                audioBtn.textContent = "Reproducir 🎵";
+                audioStatus.textContent = "Música ambiental: Pausada";
+            } else {
+                music.play().then(() => {
+                    audioBtn.textContent = "Pausar ⏸";
+                    audioStatus.textContent = "Música ambiental: Reproduciendo";
+                }).catch(e => {
+                    console.log("Error al reproducir audio:", e);
+                });
+            }
+            isPlaying = !isPlaying;
+        }
 
-    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-    
-    if (titulo.includes("Felicidades")) {
-      confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
-    }
-  }
+        // Registro de Origen de los usuarios
+        function registerOrigin() {
+            const input = document.getElementById("origin-input");
+            const value = input.value.trim();
+            if(!value) return;
 
-  function cerrarModalPremio() {
-    document.getElementById('modalPremio').style.display = 'none';
-  }
-</script>
+            const container = document.getElementById("visitors-container");
+            const newTag = document.createElement("div");
+            newTag.className = "visitor-tag";
+            newTag.innerHTML = `<span>🌍 ${escapeHtml(value)}</span> <span style="color: var(--text-muted); font-size: 0.75rem;">Justo ahora</span>`;
+            
+            container.insertBefore(newTag, container.firstChild);
+            input.value = "";
+        }
 
+        function escapeHtml(text) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        // Iniciar al cargar la página
+        window.onload = function() {
+            startTimer();
+        };
+    </script>
 </body>
 </html>
