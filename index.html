@@ -144,6 +144,11 @@
     margin-top: 12px;
   }
 
+  .main-btn:disabled {
+    opacity: 0.7;
+    cursor: default;
+  }
+
   /* Tablero de intenciones */
   .intencion-card {
     background: var(--bg-grad-2);
@@ -229,21 +234,21 @@
     <button class="menu-btn" onclick="showSection('sec-ruleta')"><span>🎡</span> Ruleta Ganadora</button>
     <button class="menu-btn" onclick="showSection('sec-sendero')"><span>⏳</span> Sendero del Peregrino</button>
     <button class="menu-btn" onclick="showSection('sec-tienda')"><span>🛍️</span> Tienda</button>
-    <button class="menu-btn" onclick="showSection('sec-donar')"><span>❤️️</span> Donar</button>
+    <button class="menu-btn" onclick="showSection('sec-donar')"><span>❤</span> Donar</button>
   </div>
 
   <!-- 1. REGISTRAR MI DIA -->
   <div id="sec-registrar" class="section">
     <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
     <h2>📅 Registrar mi día</h2>
-    <p>Confirma que hoy has apartado tu tiempo de oración para mantener encendida tu racha.</p>
-    <button class="main-btn" onclick="alert('¡Día registrado con éxito!')">Registrar oración de hoy</button>
+    <p id="estado-registro-txt">Confirma que hoy has apartado tu tiempo de oración para mantener encendida tu racha.</p>
+    <button class="main-btn" id="btn-registrar-hoy" onclick="registrarDiaHoy()">Registrar oración de hoy</button>
   </div>
 
   <!-- 2. VIDEO DEL DIA -->
   <div id="sec-video" class="section">
     <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
-    <h2>▶️ Video del Día</h2>
+    <h2>▶️️ Video del Día</h2>
     <p>Disfruta de la reflexión espiritual de hoy para fortalecer tu alma.</p>
     <div style="background:#000; height:180px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#777; margin-top:12px;">
       [ Reproductor de Video / YouTube ]
@@ -256,8 +261,8 @@
     <h2>🔥 Tu Racha Actual</h2>
     <div style="text-align: center; padding: 20px 0;">
       <span style="font-size: 3rem;">🔥</span>
-      <h3 style="font-size: 2rem; color: var(--accent); margin: 5px 0;">7 Días</h3>
-      <p>¡Vas excelente! Sigue sumando días consecutivos.</p>
+      <h3 id="racha-numero" style="font-size: 2rem; color: var(--accent); margin: 5px 0;">0 Días</h3>
+      <p>¡Constancia diaria! Cada día cuenta en tu camino espiritual.</p>
     </div>
   </div>
 
@@ -267,8 +272,8 @@
     <h2>🎁 Tus Regalos Desbloqueados</h2>
     <p>Aquí tienes acceso a los PDFs y recompensas que has ganado:</p>
     <div style="margin-top: 15px;">
-      <div style="background:var(--bg-grad-2); padding:12px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:between; align-items:center;">
-        <span>📖 Guía de Oración (Día 7)</span>
+      <div style="background:var(--bg-grad-2); padding:12px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+        <span>📖 Guía de Oración</span>
         <a href="#" style="color:var(--accent);">Descargar</a>
       </div>
     </div>
@@ -309,7 +314,7 @@
     <div style="text-align:center; font-size:2.5rem; margin:20px 0; color:var(--accent);" id="reloj-peregrino">03:00</div>
     <button class="main-btn" onclick="alert('Iniciando tiempo de oración...')">Iniciar Reloj</button>
 
-    <!-- Widget de Revolver Maps[cite: 2] -->
+    <!-- Widget de Revolver Maps -->
     <div style="margin-top:25px; text-align:center;">
       <p style="font-size:0.8rem; margin-bottom:8px;">Peregrinos conectados en el mundo:</p>
       <script type="text/javascript" src="https://revolvermaps2.com/embed.js" data-site="yoursitekey" data-size="200" async></script>
@@ -352,6 +357,11 @@
   const tg = window.Telegram ? window.Telegram.WebApp : null;
   if (tg) { tg.ready(); tg.expand(); }
 
+  // Cargar datos reales de racha al abrir la app
+  document.addEventListener("DOMContentLoaded", () => {
+    actualizarVistaRacha();
+  });
+
   function showSection(id) {
     document.getElementById('main-menu').style.display = 'none';
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -364,7 +374,81 @@
     document.getElementById('main-menu').style.display = 'grid';
   }
 
-  // Función para lanzar Confeti en toda la pantalla + Imagen central
+  // --- SISTEMA DE RACHA Y REGISTRO DIARIO REAL ---
+  function obtenerDatosRacha() {
+    let rachaData = JSON.parse(localStorage.getItem('peregrino_racha')) || {
+      dias: 0,
+      ultimoRegistro: null
+    };
+    return rachaData;
+  }
+
+  function actualizarVistaRacha() {
+    const data = obtenerDatosRacha();
+    
+    // Actualizar visualmente el número de días
+    const elementoRachaText = document.getElementById('racha-numero');
+    if (elementoRachaText) {
+      elementoRachaText.innerText = data.dias + (data.dias === 1 ? " Día" : " Días");
+    }
+
+    // Verificar si ya registró hoy
+    const hoy = new Date().toDateString();
+    const btnRegistrar = document.getElementById('btn-registrar-hoy');
+    const textoEstado = document.getElementById('estado-registro-txt');
+
+    if (data.ultimoRegistro === hoy) {
+      if (btnRegistrar) {
+        btnRegistrar.innerText = "✓ Oración registrada hoy";
+        btnRegistrar.style.background = "#7c9885";
+        btnRegistrar.disabled = true;
+      }
+      if (textoEstado) {
+        textoEstado.innerText = "¡Ya cumpliste con tu espacio de hoy! Vuelve mañana.";
+      }
+    }
+  }
+
+  function registrarDiaHoy() {
+    const hoy = new Date().toDateString();
+    let data = obtenerDatosRacha();
+
+    if (data.ultimoRegistro === hoy) {
+      alert("¡Ya habías registrado tu día hoy!");
+      return;
+    }
+
+    if (data.ultimoRegistro) {
+      const fechaUltima = new Date(data.ultimoRegistro);
+      const fechaActual = new Date(hoy);
+      const diferenciaDias = Math.floor((fechaActual - fechaUltima) / (1000 * 60 * 60 * 24));
+
+      if (diferenciaDias === 1) {
+        data.dias += 1;
+      } else if (diferenciaDias > 1) {
+        data.dias = 1; // Se rompió la racha, reinicia a 1
+      }
+    } else {
+      data.dias = 1;
+    }
+
+    data.ultimoRegistro = hoy;
+    localStorage.setItem('peregrino_racha', JSON.stringify(data));
+
+    actualizarVistaRacha();
+
+    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    
+    confetti({
+      particleCount: 50,
+      spread: 60,
+      origin: { y: 0.6 }
+    });
+
+    alert("¡Felicidades! Tu oración de hoy ha sido guardada y tu racha ha aumentado.");
+  }
+
+  // --- FUNCIÓN DE PREMIOS CON CONFETI ---
   function lanzarPremio(titulo, imagenUrl) {
     document.getElementById('tituloPremio').innerText = "¡Has ganado!";
     document.getElementById('descPremio').innerText = titulo;
@@ -373,7 +457,6 @@
 
     if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
 
-    // Explosión de confeti en toda la pantalla
     var duration = 3 * 1000;
     var end = Date.now() + duration;
 
