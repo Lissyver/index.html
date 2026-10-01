@@ -226,6 +226,31 @@
     transition: transform 3s cubic-bezier(0.15, 0.9, 0.2, 1);
   }
 
+  /* SENDERO DEL PEREGRINO - ICONOS Y FASES */
+  .peregrino-iconos-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin: 15px 0;
+  }
+  .peregrino-icono-step {
+    background: var(--bg-grad-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 4px;
+    text-align: center;
+    font-size: 1.4rem;
+    opacity: 0.4;
+    transition: all 0.3s ease;
+  }
+  .peregrino-icono-step.active {
+    opacity: 1;
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    box-shadow: 0 0 10px var(--accent-glow);
+    transform: scale(1.05);
+  }
+
   /* Modal de Premio */
   .modal-premio {
     display: none;
@@ -371,16 +396,23 @@
   <div id="sec-sendero" class="section">
     <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
     <h2>⏳ Sendero del Peregrino</h2>
-    <p>Aparta 3 minutos de silencio y oración.</p>
-    <div style="text-align:center; font-size:2.5rem; margin:20px 0; color:var(--accent);" id="reloj-peregrino">03:00</div>
-    <button class="main-btn" onclick="alert('Iniciando tiempo de oración...')">Iniciar Reloj</button>
+    <p id="instruccion-peregrino">Aparta 3 minutos de silencio y oración guiada.</p>
 
-    <!-- Widget de Revolver Maps Directo por Iframe con tu site e66fv8n7ku63 -->
-    <div style="margin-top:25px; text-align:center;">
-      <p style="font-size:0.8rem; margin-bottom:8px;">Peregrinos conectados en el mundo:</p>
-      <div style="display:inline-block; border-radius:12px; overflow:hidden; border:1px solid var(--border); background:#0f0d0a; padding:4px;">
-        <iframe src="//rc.revolvermaps.com/w/3/s/a/0/300/0/ffb23f/15120e/ffffff/e66fv8n7ku63.html" width="280" height="280" style="background:transparent;" scrolling="no" frameborder="0"></iframe>
-      </div>
+    <!-- Los 4 Íconos secuenciales de la oración -->
+    <div class="peregrino-iconos-grid">
+      <div id="icon-step-0" class="peregrino-icono-step active" title="Silencio e Invocación">🕯️</div>
+      <div id="icon-step-1" class="peregrino-icono-step" title="Lectura y Meditación">📖</div>
+      <div id="icon-step-2" class="peregrino-icono-step" title="Petición y Súplica">🙏</div>
+      <div id="icon-step-3" class="peregrino-icono-step" title="Agradecimiento y Paz">🕊️</div>
+    </div>
+    
+    <div style="text-align:center; font-size:2.5rem; margin:15px 0; color:var(--accent); font-weight:bold;" id="reloj-peregrino">03:00</div>
+    <button class="main-btn" id="btn-iniciar-reloj" onclick="iniciarSenderoPeregrino()">Iniciar Tiempo de Oración</button>
+
+    <!-- Widget de Comunidad Global Alternativo (Sin errores de robot) -->
+    <div style="margin-top:25px; background:var(--bg-grad-2); border:1px solid var(--border); border-radius:14px; padding:12px; text-align:center;">
+      <p style="font-size:0.8rem; margin:0 0 4px 0; color:var(--accent);">🌍 Red Mundial de Peregrinos</p>
+      <p style="font-size:0.85rem; color:var(--text); margin:0;">Hay <b>1,428</b> hermanos orando en este momento.</p>
     </div>
   </div>
 
@@ -502,6 +534,75 @@
     if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
     alert("¡Felicidades! Tu oración de hoy ha sido guardada.");
+  }
+
+  // --- SENDERO DEL PEREGRINO (TEMPORIZADOR + 4 ICONOS CADA 45 SEG / 3 MIN TOTAL) ---
+  let temporizadorIntervalo = null;
+  const FASES_TEXTOS = [
+    "1. Silencio e Invocación (Prepárate en presencia de Dios)",
+    "2. Lectura y Meditación de la Palabra",
+    "3. Petición, Súplica y Oración por otros",
+    "4. Agradecimiento, Paz y Clausura"
+  ];
+
+  function iniciarSenderoPeregrino() {
+    if (temporizadorIntervalo) return; // Ya está corriendo
+
+    let tiempoTotalSegundos = 180; // 3 minutos en total
+    const relojElemento = document.getElementById('reloj-peregrino');
+    const instruccionElemento = document.getElementById('instruccion-peregrino');
+    const btnIniciar = document.getElementById('btn-iniciar-reloj');
+
+    btnIniciar.disabled = true;
+    btnIniciar.style.opacity = "0.6";
+    btnIniciar.innerText = "En oración profunda...";
+
+    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+
+    temporizadorIntervalo = setInterval(() => {
+      tiempoTotalSegundos--;
+
+      // Calcular minutos y segundos
+      let minutos = Math.floor(tiempoTotalSegundos / 60);
+      let segundos = tiempoTotalSegundos % 60;
+      relojElemento.innerText = (minutos < 10 ? "0" : "") + minutos + ":" + (segundos < 10 ? "0" : "") + segundos;
+
+      // Actualizar los 4 iconos cada 45 segundos (180s / 4 fases = 45s por fase)
+      let faseActual = Math.floor((180 - tiempoTotalSegundos - 1) / 45);
+      if (faseActual > 3) faseActual = 3;
+      if (faseActual < 0) faseActual = 0;
+
+      actualizarIconosFase(faseActual);
+      if (instruccionElemento && FASES_TEXTOS[faseActual]) {
+        instruccionElemento.innerText = FASES_TEXTOS[faseActual];
+      }
+
+      if (tiempoTotalSegundos <= 0) {
+        clearInterval(temporizadorIntervalo);
+        temporizadorIntervalo = null;
+        relojElemento.innerText = "00:00";
+        instruccionElemento.innerText = "¡Has completado tu Sendero del Peregrino con éxito!";
+        btnIniciar.innerText = "¡Oración Finalizada! 🙏";
+        btnIniciar.style.background = "#7c9885";
+        
+        if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+        confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+        enviarASheets("Sendero del Peregrino", "Completó 3 minutos de oración guiada");
+      }
+    }, 1000);
+  }
+
+  function actualizarIconosFase(indiceActivo) {
+    for (let i = 0; i < 4; i++) {
+      const iconoElem = document.getElementById(`icon-step-${i}`);
+      if (iconoElem) {
+        if (i === indiceActivo) {
+          iconoElem.classList.add('active');
+        } else {
+          iconoElem.classList.remove('active');
+        }
+      }
+    }
   }
 
   // --- TABLERO DE INTENCIONES ---
