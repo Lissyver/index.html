@@ -1,579 +1,885 @@
-// =====================================================
-// CADA DÍA CON DIOS
-// MINI APP → GOOGLE APPS SCRIPT → GOOGLE SHEETS
-// =====================================================
-
-// ⚠️ COLOCA AQUÍ EL TOKEN NUEVO DE BOTFATHER
-const BOT_TOKEN = 'TU_TOKEN_NUEVO';
-
-const SHEET_ID = '1KMlDV8Tf67KlaQ6kQalegWY4UPMeVJ815T0dlTiim-M';
-const ZONA_HORARIA = 'America/Panama';
-
-
-// =====================================================
-// DO GET
-// =====================================================
-
-function doGet(e) {
-
-  return ContentService
-    .createTextOutput(
-      JSON.stringify({
-        ok: true,
-        servicio: 'Cada Día con Dios',
-        estado: 'activo'
-      })
-    )
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-
-// =====================================================
-// DO POST
-// RECIBE INFORMACIÓN DE LA MINI APP
-// =====================================================
-
-function doPost(e) {
-
-  try {
-
-    if (!e || !e.postData || !e.postData.contents) {
-      return respuestaJSON({
-        ok: false,
-        error: 'No se recibió información'
-      });
-    }
-
-    const datos = JSON.parse(e.postData.contents);
-
-    const tipo = datos.tipo || '';
-    const detalle = datos.detalle || '';
-
-    const telegramId = datos.telegramId || '';
-    const nombre = datos.nombre || 'Peregrino';
-    const username = datos.username || '';
-
-    // -------------------------------------------------
-    // REGISTRAR USUARIO
-    // -------------------------------------------------
-
-    if (telegramId) {
-      registrarUsuario(
-        telegramId,
-        nombre,
-        username
-      );
-    }
-
-    // -------------------------------------------------
-    // REGISTRO DIARIO
-    // -------------------------------------------------
-
-    if (tipo === 'Registro Diario') {
-
-      const resultado = registrarDia(
-        telegramId,
-        nombre
-      );
-
-      return respuestaJSON(resultado);
-    }
-
-    // -------------------------------------------------
-    // OTROS EVENTOS
-    // -------------------------------------------------
-
-    if (tipo) {
-
-      registrarEvento(
-        telegramId,
-        nombre,
-        tipo,
-        detalle
-      );
-
-      return respuestaJSON({
-        ok: true,
-        evento: tipo
-      });
-    }
-
-    return respuestaJSON({
-      ok: true
-    });
-
-  } catch (error) {
-
-    console.error(error);
-
-    return respuestaJSON({
-      ok: false,
-      error: error.toString()
-    });
-  }
-}
-
-
-// =====================================================
-// RESPUESTA JSON
-// =====================================================
-
-function respuestaJSON(objeto) {
-
-  return ContentService
-    .createTextOutput(
-      JSON.stringify(objeto)
-    )
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-
-// =====================================================
-// REGISTRAR USUARIO
-// =====================================================
-
-function registrarUsuario(
-  telegramId,
-  nombre,
-  username
-) {
-
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-
-  let hoja = ss.getSheetByName('Usuarios');
-
-  if (!hoja) {
-
-    hoja = ss.insertSheet('Usuarios');
-
-    hoja.appendRow([
-      'Chat ID',
-      'Nombre',
-      'Username',
-      'Fecha de Registro'
-    ]);
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Cada Día con Dios - Mini App</title>
+<!-- SDK de Telegram Web App -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- Librería de Confeti -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<style>
+  :root {
+    --bg: #15120e;
+    --bg-grad-1: #1f1912;
+    --bg-grad-2: #0f0d0a;
+    --card-bg: #211b14;
+    --text: #f1e9da;
+    --text-soft: #a89880;
+    --accent: #d99b4e;
+    --accent-soft: #3a2d1c;
+    --accent-glow: rgba(217, 155, 78, 0.35);
+    --border: #3a3022;
+    --done: #7c9885;
   }
 
-  const datos = hoja.getDataRange().getValues();
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-  for (let i = 1; i < datos.length; i++) {
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(ellipse at top, var(--bg-grad-1), var(--bg-grad-2));
+    color: var(--text);
+    font-family: Georgia, 'Times New Roman', serif;
+    padding: 20px;
+    padding-bottom: 50px;
+  }
 
-    if (
-      String(datos[i][0]) ===
-      String(telegramId)
-    ) {
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+  }
 
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .header h1 {
+    font-size: 1.4rem;
+    color: var(--accent);
+    margin: 0 0 4px 0;
+    font-weight: 400;
+  }
+  .header p {
+    font-size: 0.85rem;
+    color: var(--text-soft);
+    font-style: italic;
+    margin: 0;
+  }
+
+  /* Notificación / Recordatorio en Pantalla Principal */
+  .recordatorio-banner {
+    display: none;
+    background: linear-gradient(135deg, var(--accent-soft), var(--card-bg));
+    border: 1px solid var(--accent);
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 0 15px var(--accent-glow);
+    animation: pulsoAlerta 2s infinite;
+    cursor: pointer;
+  }
+  .recordatorio-banner span {
+    font-size: 1.8rem;
+  }
+  .recordatorio-banner div h4 {
+    margin: 0 0 2px 0;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .recordatorio-banner div p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text);
+  }
+
+  @keyframes pulsoAlerta {
+    0% { border-color: rgba(217, 155, 78, 0.4); }
+    50% { border-color: rgba(217, 155, 78, 1); }
+    100% { border-color: rgba(217, 155, 78, 0.4); }
+  }
+
+  /* Menú de Botones Principales */
+  .menu-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .menu-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 12px;
+    color: var(--text);
+    font-family: Georgia, serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+
+  .menu-btn span {
+    font-size: 1.6rem;
+  }
+
+  .menu-btn:active {
+    transform: scale(0.96);
+    border-color: var(--accent);
+  }
+
+  .menu-btn.full {
+    grid-column: span 2;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  /* Secciones */
+  .section {
+    display: none;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .section.active {
+    display: block;
+  }
+
+  .back-btn {
+    background: transparent;
+    border: none;
+    color: var(--accent);
+    font-family: Georgia, serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-bottom: 16px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  h2 { font-size: 1.2rem; color: var(--accent); margin-top: 0; font-weight: 400; }
+  p, label { font-size: 0.9rem; color: var(--text-soft); line-height: 1.4; }
+
+  .main-btn {
+    width: 100%;
+    background: var(--accent);
+    color: #1c1409;
+    border: none;
+    border-radius: 50px;
+    padding: 14px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: Georgia, serif;
+    cursor: pointer;
+    margin-top: 12px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+  }
+
+  .main-btn:disabled {
+    opacity: 0.7;
+    cursor: default;
+  }
+
+  /* Tablero de intenciones */
+  .intencion-card {
+    background: var(--bg-grad-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .intencion-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    font-size: 0.85rem;
+  }
+  .action-chip {
+    background: var(--accent-soft);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 20px;
+    color: var(--accent);
+    cursor: pointer;
+  }
+
+  /* RULETA VISUAL */
+  .ruleta-container {
+    text-align: center;
+    position: relative;
+    margin: 20px 0;
+  }
+  .ruleta-circulo {
+    width: 180px;
+    height: 180px;
+    border: 6px solid var(--accent);
+    border-radius: 50%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    background: var(--bg-grad-2);
+    box-shadow: 0 0 20px var(--accent-glow);
+    transition: transform 3s cubic-bezier(0.15, 0.9, 0.2, 1);
+  }
+
+  /* SENDERO DEL PEREGRINO - ICONOS Y FASES */
+  .peregrino-iconos-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin: 15px 0;
+  }
+  .peregrino-icono-step {
+    background: var(--bg-grad-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 4px;
+    text-align: center;
+    font-size: 1.4rem;
+    opacity: 0.4;
+    transition: all 0.3s ease;
+  }
+  .peregrino-icono-step.active {
+    opacity: 1;
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    box-shadow: 0 0 10px var(--accent-glow);
+    transform: scale(1.05);
+  }
+
+  /* Formulario y Lista de Origen */
+  .form-group-origen {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    margin-bottom: 15px;
+  }
+  .form-group-origen input {
+    flex: 1;
+    background: var(--bg-grad-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    padding: 10px;
+    font-family: Georgia, serif;
+    outline: none;
+  }
+  .form-group-origen input:focus { border-color: var(--accent); }
+
+  .visitors-list {
+    max-height: 130px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .visitor-tag {
+    background: var(--bg-grad-2);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 3px solid var(--accent);
+  }
+
+  /* Modal de Premio */
+  .modal-premio {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  .modal-content {
+    background: var(--card-bg);
+    border: 2px solid var(--accent);
+    border-radius: 24px;
+    padding: 30px;
+    text-align: center;
+    max-width: 340px;
+    width: 100%;
+    box-shadow: 0 0 30px var(--accent-glow);
+  }
+  .modal-content img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--accent);
+    margin-bottom: 15px;
+  }
+
+  textarea {
+    width: 100%;
+    background: var(--bg-grad-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    padding: 10px;
+    font-family: Georgia, serif;
+    margin-top: 8px;
+    resize: none;
+    height: 80px;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <h1>🙏 Cada Día con Dios</h1>
+    <p>Tu espacio de fe, comunidad y oración</p>
+  </div>
+
+  <!-- NOTIFICACIÓN / RECORDATORIO PENDIENTE -->
+  <div id="bannerRecordatorio" class="recordatorio-banner" onclick="showSection('sec-registrar')">
+    <span>🔔</span>
+    <div>
+      <h4>¡Aún no has registrado tu día!</h4>
+      <p>Toca aquí para apartar tu momento de oración y mantener tu racha viva.</p>
+    </div>
+  </div>
+
+  <!-- MENU PRINCIPAL -->
+  <div id="main-menu" class="menu-grid">
+    <button class="menu-btn" onclick="showSection('sec-registrar')"><span>📅</span> Registrar mi día</button>
+    <button class="menu-btn" onclick="showSection('sec-video')"><span>▶️</span> Video del día</button>
+    <button class="menu-btn" onclick="showSection('sec-racha')"><span>🔥</span> Mi Racha</button>
+    <button class="menu-btn" onclick="showSection('sec-regalos')"><span>🎁</span> Mis Regalos</button>
+    <button class="menu-btn full" onclick="showSection('sec-intenciones')"><span>💬</span> Tablero de Intenciones</button>
+    <button class="menu-btn" onclick="showSection('sec-ruleta')"><span>🎡</span> Ruleta Ganadora</button>
+    <button class="menu-btn" onclick="showSection('sec-sendero')"><span>⏳</span> Sendero del Peregrino</button>
+    <button class="menu-btn" onclick="showSection('sec-tienda')"><span>🛍️</span> Tienda</button>
+    <button class="menu-btn" onclick="showSection('sec-donar')"><span>❤</span> Donar</button>
+  </div>
+
+  <!-- 1. REGISTRAR MI DIA -->
+  <div id="sec-registrar" class="section">
+    <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
+    <h2>📅 Registrar mi día</h2>
+    <p id="estado-registro-txt">Confirma que hoy has apartado tu tiempo de oración para mantener encendida tu racha.</p>
+    <button class="main-btn" id="btn-registrar-hoy" onclick="registrarDiaHoy()">Registrar oración de hoy</button>
+  </div>
+
+  <!-- 2. VIDEO DEL DIA -->
+  <div id="sec-video" class="section">
+    <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
+    <h2>▶ Video del Día</h2>
+    <p><b>DIOS TE DICE HOY: RECOMPENSARE TUS AÑOS MALOS CON ALEGRÍA | SALMO 90</b></p>
+    <div style="position: relative; width: 100%; padding-bottom: 177.77%; height: 0; background: #000; border-radius: 12px; overflow: hidden; margin-top: 12px;">
+      <iframe src="https://www.youtube.com/embed/JNH2ef1a220" title="Video del Día" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- 3. MI RACHA -->
+  <div id="sec-racha" class="section">
+    <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
+    <h2>🔥 Tu Racha Actual</h2>
+    <div style="text-align: center; padding: 20px 0;">
+      <span style="font-size: 3rem;">🔥</span>
+      <h3 id="racha-numero" style="font-size: 2rem; color: var(--accent); margin: 5px 0;">0 Días</h3>
+      <p>¡Constancia diaria! Cada día cuenta en tu camino espiritual.</p>
+    </div>
+  </div>
+
+  <!-- 4. MIS REGALOS -->
+  <div id="sec-regalos" class="section">
+    <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
+    <h2>🎁 Tus Regalos Desbloqueados</h2>
+    <p>Aquí aparecerán tus recompensas a medida que cumplas tus días de racha o ganes en la ruleta.</p>
+    <div id="contenedor-lista-regalos" style="margin-top: 15px;"></div>
+  </div>
+
+  <!-- 5. TABLERO DE INTENCIONES -->
+  <div id="sec-intenciones" class="section">
+    <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
+    <h2>💬 Tablero de Intenciones</h2>
+    <p>Comparte tu petición para que otros hermanos oren por ti.</p>
+    <textarea id="input-intencion" placeholder="Escribe tu intención aquí... (ej. Por la salud de mi familia)"></textarea>
+    <button class="main-btn" style="margin-bottom:20px;" onclick="publicarIntencion()">Publicar intención</button>
+
+    <div id="contenedor-lista-intenciones"></div>
+  </div>
+
+  <!-- 6. RULETA GANADORA -->
+  <div id="sec-ruleta" class="section">
+    <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
+    <h2>🎡 Ruleta Ganadora</h2>
+    <p>Gira la ruleta una vez al día y prueba tu fortuna.</p>
+    
+    <div class="ruleta-container">
+      <div id="ruletaCirculo" class="ruleta-circulo">🎯</div>
+    </div>
+
+    <button class="main-btn" id="btnGirarRuleta" onclick="girarRuleta()">¡Girar la Ruleta!</button>
+    <p id="textoEstadoRuleta" style="text-align:center; font-size:0.8rem; margin-top:8px;"></p>
+  </div>
+
+  <!-- 7. SENDERO DEL PEREGRINO -->
+  <div id="sec-sendero" class="section">
+    <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
+    <h2>⏳ Sendero del Peregrino</h2>
+    <p id="instruccion-peregrino">Aparta 8 minutos de silencio y meditación guiada (2 min por etapa).</p>
+
+    <!-- Reproductor de Música Relajante con control robusto y directo -->
+    <div style="background:var(--bg-grad-2); padding:10px 14px; border-radius:12px; border:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; margin-bottom:15px;">
+      <span id="audio-status" style="font-size: 0.8rem;">🎵 Música: Pausada</span>
+      <button id="audioBtn" onclick="toggleAudio()" style="background:var(--accent); border:none; color:#15120e; padding:6px 14px; border-radius:15px; font-weight:bold; cursor:pointer; font-size:0.8rem;">Reproducir</button>
+    </div>
+    <!-- Elemento de audio con pista estable y accesible -->
+    <audio id="bg-music" loop preload="auto">
+      <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=meditation-flute-and-water-110904.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Los 4 Íconos secuenciales -->
+    <div class="peregrino-iconos-grid">
+      <div id="icon-step-0" class="peregrino-icono-step active" title="Silencio e Invocación">🕯️</div>
+      <div id="icon-step-1" class="peregrino-icono-step" title="Lectura y Meditación">📖</div>
+      <div id="icon-step-2" class="peregrino-icono-step" title="Petición y Súplica">🙏</div>
+      <div id="icon-step-3" class="peregrino-icono-step" title="Agradecimiento y Paz">🕊️</div>
+    </div>
+    
+    <div style="text-align:center; font-size:2.5rem; margin:15px 0; color:var(--accent); font-weight:bold;" id="reloj-peregrino">02:00</div>
+    <button class="main-btn" id="btn-iniciar-reloj" onclick="iniciarSenderoPeregrino()">Iniciar Tiempo de Oración</button>
+
+    <!-- Registro de Origen Estético -->
+    <div style="margin-top:25px; border-top:1px solid var(--border); padding-top:15px;">
+      <p style="font-size:0.85rem; margin:0 0 6px 0; color:var(--accent);">🌍 ¿De dónde nos visitas?</p>
+      <div class="form-group-origen">
+        <input type="text" id="input-origen" placeholder="Ciudad o país (ej. Bogotá, Colombia)">
+        <button class="main-btn" style="margin-top:0; width:auto; padding:0 15px;" onclick="registrarOrigen()">Añadir</button>
+      </div>
+      <div class="visitors-list" id="contenedor-visitantes"></div>
+    </div>
+  </div>
+
+  <!-- 8. TIENDA -->
+  <div id="sec-tienda" class="section">
+    <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
+    <h2>🛍️ Tienda</h2>
+    <p>Adquiere libros, devocionales impresos y recursos exclusivos.</p>
+    <div style="background:var(--bg-grad-2); padding:15px; border-radius:12px; margin-top:12px; text-align:center;">
+      <p style="color:var(--text); font-weight:bold; margin:0 0 5px 0;">Devocional 40 Días en el Desierto</p>
+      <p style="margin:0 0 10px 0;">$12.00 USD</p>
+      <button class="main-btn" style="padding:8px; font-size:0.85rem;" onclick="showSection('sec-donar')">Comprar ahora</button>
+    </div>
+  </div>
+
+  <!-- 9. DONAR (Con botones separados de Binance y PayPal) -->
+  <div id="sec-donar" class="section">
+    <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
+    <h2>❤ Apoya este Ministerio</h2>
+    <p style="line-height: 1.5; margin-bottom: 20px;">
+      Si gustas colaborar con el canal para seguir llevándoles gratis la palabra, puedes hacerlo a través de nuestros enlaces oficiales. ¡Dios te bendiga por tu generosidad!<br><br>
+      También puedes colaborar adquiriendo nuestros productos en la sección de la <b>Tienda</b>.
+    </p>
+    
+    <!-- Botón PayPal -->
+    <a href="https://www.paypal.com/paypalme/my/profile" target="_blank" class="main-btn" style="margin-bottom: 12px; background: #0070ba; color: white;">Donar con PayPal 🌐</a>
+    
+    <!-- Botón Binance -->
+    <a href="https://app.binance.com/uni-qr/uEYB3enK" target="_blank" class="main-btn" style="background: #f0b90b; color: #15120e;">Donar con Binance 🪙</a>
+  </div>
+
+</div>
+
+<!-- MODAL DE PREMIO -->
+<div id="modalPremio" class="modal-premio">
+  <div class="modal-content">
+    <img id="imgPremio" src="" alt="Premio">
+    <h2 id="tituloPremio" style="margin:0 0 8px 0;">¡Felicidades!</h2>
+    <p id="descPremio" style="margin:0 0 20px 0;"></p>
+    <button class="main-btn" onclick="cerrarModalPremio()">¡Aceptar y Guardar! 🎉</button>
+  </div>
+</div>
+
+<script>
+  const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbzhH98vWYHVshdZ82b0cDXpd8QvvFiWGGQzqqs2p9dTmizZrmI441_inUkMdYxFyoacnw/exec";
+
+  const tg = window.Telegram ? window.Telegram.WebApp : null;
+  if (tg) { tg.ready(); tg.expand(); }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    actualizarVistaRacha();
+    cargarIntenciones();
+    verificarEstadoRuleta();
+    cargarRegalos();
+    cargarVisitantes();
+  });
+
+  function showSection(id) {
+    document.getElementById('main-menu').style.display = 'none';
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+  }
+
+  function showMenu() {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('main-menu').style.display = 'grid';
+  }
+
+  // --- GOOGLE SHEETS ---
+  function enviarASheets(tipoDato, detalleDato) {
+    if (!URL_GOOGLE_SCRIPT) return;
+    fetch(URL_GOOGLE_SCRIPT, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tipo: tipoDato, detalle: detalleDato })
+    }).catch(err => console.error("Error al enviar a Sheets:", err));
+  }
+
+  // --- RACHA Y RECORDATORIO VISUAL ---
+  function obtenerDatosRacha() {
+    return JSON.parse(localStorage.getItem('peregrino_racha')) || { dias: 0, ultimoRegistro: null };
+  }
+
+  function actualizarVistaRacha() {
+    const data = obtenerDatosRacha();
+    const elementoRachaText = document.getElementById('racha-numero');
+    if (elementoRachaText) elementoRachaText.innerText = data.dias + (data.dias === 1 ? " Día" : " Días");
+
+    const hoy = new Date().toDateString();
+    const btnRegistrar = document.getElementById('btn-registrar-hoy');
+    const textoEstado = document.getElementById('estado-registro-txt');
+    const bannerRecordatorio = document.getElementById('bannerRecordatorio');
+
+    if (data.ultimoRegistro === hoy) {
+      if (bannerRecordatorio) bannerRecordatorio.style.display = 'none';
+      if (btnRegistrar) {
+        btnRegistrar.innerText = "✓ Oración registrada hoy";
+        btnRegistrar.style.background = "#7c9885";
+        btnRegistrar.disabled = true;
+      }
+      if (textoEstado) textoEstado.innerText = "¡Ya cumpliste con tu espacio de hoy! Vuelve mañana.";
+    } else {
+      if (bannerRecordatorio) bannerRecordatorio.style.display = 'flex';
+    }
+  }
+
+  function registrarDiaHoy() {
+    const hoy = new Date().toDateString();
+    let data = obtenerDatosRacha();
+    if (data.ultimoRegistro === hoy) return;
+
+    if (data.ultimoRegistro) {
+      const fechaUltima = new Date(data.ultimoRegistro);
+      const fechaActual = new Date(hoy);
+      const diferenciaDias = Math.floor((fechaActual - fechaUltima) / (1000 * 60 * 60 * 24));
+      if (diferenciaDias === 1) data.dias += 1;
+      else if (diferenciaDias > 1) data.dias = 1;
+    } else {
+      data.dias = 1;
+    }
+
+    data.ultimoRegistro = hoy;
+    localStorage.setItem('peregrino_racha', JSON.stringify(data));
+    enviarASheets("Registro Diario", "Racha actual: " + data.dias + " días");
+    actualizarVistaRacha();
+
+    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+    alert("¡Felicidades! Tu oración de hoy ha sido guardada.");
+  }
+
+  // --- REGISTRO DE ORIGEN ---
+  function registrarOrigen() {
+    const input = document.getElementById('input-origen');
+    const valor = input.value.trim();
+    if (!valor) return;
+
+    let visitantes = JSON.parse(localStorage.getItem('peregrino_visitantes')) || [];
+    visitantes.unshift({ origen: valor, tiempo: "Justo ahora" });
+    localStorage.setItem('peregrino_visitantes', JSON.stringify(visitantes));
+    input.value = "";
+    cargarVisitantes();
+    enviarASheets("Origen Peregrino", valor);
+  }
+
+  function cargarVisitantes() {
+    let visitantes = JSON.parse(localStorage.getItem('peregrino_visitantes')) || [];
+    const contenedor = document.getElementById('contenedor-visitantes');
+    if (!contenedor) return;
+
+    if (visitantes.length === 0) {
+      contenedor.innerHTML = `<p style="font-size:0.8rem; text-align:center; color:var(--text-soft); margin:5px 0;">Sé el primero en registrar de dónde nos visitas.</p>`;
       return;
     }
+
+    contenedor.innerHTML = "";
+    visitantes.forEach(item => {
+      contenedor.innerHTML += `
+        <div class="visitor-tag">
+          <span>🌍 ${item.origen}</span>
+          <span style="color:var(--text-soft); font-size:0.75rem;">${item.tiempo}</span>
+        </div>
+      `;
+    });
   }
 
-  hoja.appendRow([
-    telegramId,
-    nombre,
-    username,
-    new Date()
-  ]);
-}
-
-
-// =====================================================
-// REGISTRAR DÍA
-// =====================================================
-
-function registrarDia(
-  telegramId,
-  nombre
-) {
-
-  if (!telegramId) {
-
-    return {
-      ok: false,
-      error: 'No se recibió Telegram ID'
-    };
-  }
-
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-
-  let hoja = ss.getSheetByName('Registros');
-
-  if (!hoja) {
-
-    hoja = ss.insertSheet('Registros');
-
-    hoja.appendRow([
-      'Fecha',
-      'Chat ID',
-      'Nombre',
-      'Tipo de Evento',
-      'Día de Racha'
-    ]);
-  }
-
-  const hoy = Utilities.formatDate(
-    new Date(),
-    ZONA_HORARIA,
-    'yyyy-MM-dd'
-  );
-
-  const datos = hoja.getDataRange().getValues();
-
-  // -------------------------------------------------
-  // COMPROBAR SI YA REGISTRÓ HOY
-  // -------------------------------------------------
-
-  for (let i = 1; i < datos.length; i++) {
-
-    const fechaCelda = datos[i][0];
-    const id = String(datos[i][1]);
-
-    if (!fechaCelda) {
-      continue;
-    }
-
-    const fecha = Utilities.formatDate(
-      new Date(fechaCelda),
-      ZONA_HORARIA,
-      'yyyy-MM-dd'
-    );
-
-    if (
-      fecha === hoy &&
-      id === String(telegramId)
-    ) {
-
-      const rachaActual = datos[i][4] || 1;
-
-      return {
-        ok: true,
-        yaRegistrado: true,
-        racha: Number(rachaActual),
-        mensaje: 'Ya registraste tu oración de hoy.'
-      };
+  // --- REGALOS ---
+  function agregarRegalo(tituloRegalo) {
+    let regalos = JSON.parse(localStorage.getItem('peregrino_regalos')) || [];
+    if (!regalos.some(r => r.titulo === tituloRegalo)) {
+      regalos.push({ titulo: tituloRegalo, enlace: "#" });
+      localStorage.setItem('peregrino_regalos', JSON.stringify(regalos));
+      cargarRegalos();
     }
   }
 
+  function cargarRegalos() {
+    let regalos = JSON.parse(localStorage.getItem('peregrino_regalos')) || [];
+    const contenedor = document.getElementById('contenedor-lista-regalos');
+    if (!contenedor) return;
 
-  // -------------------------------------------------
-  // CALCULAR RACHA
-  // -------------------------------------------------
-
-  const racha = calcularRacha(
-    hoja,
-    telegramId,
-    hoy
-  );
-
-
-  // -------------------------------------------------
-  // GUARDAR REGISTRO
-  // -------------------------------------------------
-
-  hoja.appendRow([
-    new Date(),
-    telegramId,
-    nombre,
-    'Registro diario',
-    racha
-  ]);
-
-
-  // -------------------------------------------------
-  // DETERMINAR PREMIO
-  // -------------------------------------------------
-
-  let premio = '';
-
-  if (racha === 7) {
-    premio = '7 días';
-  }
-
-  if (racha === 14) {
-    premio = '14 días';
-  }
-
-  if (racha === 21) {
-    premio = '21 días';
-  }
-
-  if (racha === 40) {
-    premio = '40 días';
-  }
-
-
-  // -------------------------------------------------
-  // ENVIAR MENSAJE A TELEGRAM
-  // -------------------------------------------------
-
-  let mensaje =
-    '🙏 *¡Registro completado!*\n\n' +
-    'Hola, ' + nombre + '. ❤️\n\n' +
-    '🔥 Tu racha actual es de *' +
-    racha +
-    ' día(s)*.\n\n';
-
-  if (premio) {
-
-    mensaje +=
-      '🎁 *¡FELICIDADES!*\n\n' +
-      'Has completado *' +
-      premio +
-      '* de oración.\n\n' +
-      'Tu recompensa ha sido desbloqueada. 🎉\n\n';
-  }
-
-  mensaje +=
-    'Sigue caminando cada día con Dios. 🙏';
-
-
-  enviarMensaje(
-    telegramId,
-    mensaje
-  );
-
-
-  return {
-
-    ok: true,
-
-    yaRegistrado: false,
-
-    racha: racha,
-
-    premio: premio,
-
-    mensaje: 'Registro completado'
-  };
-}
-
-
-// =====================================================
-// CALCULAR RACHA
-// =====================================================
-
-function calcularRacha(
-  hoja,
-  telegramId,
-  hoy
-) {
-
-  const datos =
-    hoja.getDataRange().getValues();
-
-  const fechas = [];
-
-  for (let i = 1; i < datos.length; i++) {
-
-    const id =
-      String(datos[i][1]);
-
-    if (
-      id !== String(telegramId)
-    ) {
-      continue;
+    if (regalos.length === 0) {
+      contenedor.innerHTML = `
+        <div style="text-align:center; padding: 20px 0; color: var(--text-soft);">
+          <span style="font-size: 2.5rem;">🔒</span>
+          <p style="margin-top: 10px; font-size: 0.9rem;">Aún no tienes premios. Sigue completando tus días de oración o prueba tu fortuna en la Ruleta para desbloquear recompensas exclusivas.</p>
+        </div>
+      `;
+      return;
     }
 
-    if (!datos[i][0]) {
-      continue;
+    contenedor.innerHTML = "";
+    regalos.forEach(regalo => {
+      contenedor.innerHTML += `
+        <div style="background:var(--bg-grad-2); padding:12px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; border: 1px solid var(--accent);">
+          <span>${regalo.titulo}</span>
+          <a href="${regalo.enlace}" style="color:var(--accent); text-decoration:none; font-weight:bold; font-size:0.85rem;">Descargar</a>
+        </div>
+      `;
+    });
+  }
+
+  // --- TABLERO DE INTENCIONES ---
+  function publicarIntencion() {
+    const textoIntencion = document.getElementById('input-intencion').value.trim();
+    if (!textoIntencion) {
+      alert("Por favor escribe una intención antes de publicar.");
+      return;
     }
 
-    const fecha =
-      Utilities.formatDate(
-        new Date(datos[i][0]),
-        ZONA_HORARIA,
-        'yyyy-MM-dd'
-      );
+    let intenciones = JSON.parse(localStorage.getItem('peregrino_intenciones')) || [
+      { texto: "Señor, te pido por la salud de mi madre y paz en mi hogar.", autor: "Ana M.", orando: 127, corazones: 18 }
+    ];
 
-    if (!fechas.includes(fecha)) {
+    intenciones.unshift({
+      texto: textoIntencion,
+      autor: (window.Telegram && window.Telegram.WebApp.initDataUnsafe?.user?.first_name) ? window.Telegram.WebApp.initDataUnsafe.user.first_name : "Peregrino Anónimo",
+      orando: 1,
+      corazones: 1
+    });
 
-      fechas.push(fecha);
+    localStorage.setItem('peregrino_intenciones', JSON.stringify(intenciones));
+    document.getElementById('input-intencion').value = "";
+    enviarASheets("Intención", textoIntencion);
+
+    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    alert("¡Tu intención ha sido publicada con éxito!");
+    cargarIntenciones();
+  }
+
+  function cargarIntenciones() {
+    let intenciones = JSON.parse(localStorage.getItem('peregrino_intenciones')) || [
+      { texto: "Señor, te pido por la salud de mi madre y paz en mi hogar.", autor: "Ana M.", orando: 127, corazones: 18 }
+    ];
+
+    const contenedor = document.getElementById('contenedor-lista-intenciones');
+    if (!contenedor) return;
+
+    contenedor.innerHTML = "";
+    intenciones.forEach((item, index) => {
+      contenedor.innerHTML += `
+        <div class="intencion-card">
+          <p style="color:var(--text); margin:0 0 8px 0;">"${item.texto}" - <i>${item.autor}</i></p>
+          <div class="intencion-actions">
+            <span class="action-chip" onclick="reaccionarIntencion(${index}, 'orando')">🙏 ${item.orando} orando</span>
+            <span class="action-chip" onclick="reaccionarIntencion(${index}, 'corazones')">❤️ ${item.corazones}</span>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  function reaccionarIntencion(index, tipo) {
+    let intenciones = JSON.parse(localStorage.getItem('peregrino_intenciones')) || [];
+    if (intenciones[index]) {
+      if (tipo === 'orando') intenciones[index].orando += 1;
+      if (tipo === 'corazones') intenciones[index].corazones += 1;
+      localStorage.setItem('peregrino_intenciones', JSON.stringify(intenciones));
+      cargarIntenciones();
     }
   }
 
-  fechas.sort().reverse();
+  // --- RULETA ---
+  function verificarEstadoRuleta() {
+    const hoy = new Date().toDateString();
+    const ultimoGiro = localStorage.getItem('peregrino_ultimo_giro');
+    const btnGirar = document.getElementById('btnGirarRuleta');
+    const txtEstado = document.getElementById('textoEstadoRuleta');
 
-
-  // Si no hay registros anteriores
-  if (fechas.length === 0) {
-    return 1;
-  }
-
-
-  let racha = 1;
-
-  let fechaAnterior =
-    new Date(hoy + 'T12:00:00');
-
-
-  for (
-    let i = 0;
-    i < fechas.length;
-    i++
-  ) {
-
-    const fechaRegistro =
-      fechas[i];
-
-    // El registro de hoy no se cuenta
-    if (
-      fechaRegistro === hoy
-    ) {
-      continue;
-    }
-
-    const fecha =
-      new Date(
-        fechaRegistro + 'T12:00:00'
-      );
-
-    const diferencia =
-      Math.round(
-        (
-          fechaAnterior - fecha
-        ) /
-        (1000 * 60 * 60 * 24)
-      );
-
-
-    if (diferencia === 1) {
-
-      racha++;
-
-      fechaAnterior = fecha;
-
+    if (ultimoGiro === hoy) {
+      btnGirar.disabled = true;
+      btnGirar.style.opacity = "0.5";
+      txtEstado.innerText = "Ya giraste la ruleta hoy. Vuelve mañana para un nuevo intento.";
     } else {
-
-      break;
+      btnGirar.disabled = false;
+      btnGirar.style.opacity = "1";
+      txtEstado.innerText = "¡Tienes 1 giro disponible hoy!";
     }
   }
 
-  return racha;
-}
+  let premioGanadoTemp = "";
 
+  function girarRuleta() {
+    const hoy = new Date().toDateString();
+    localStorage.setItem('peregrino_ultimo_giro', hoy);
+    verificarEstadoRuleta();
 
-// =====================================================
-// REGISTRAR OTROS EVENTOS
-// =====================================================
+    const ruleta = document.getElementById('ruletaCirculo');
+    const gradosAleatorios = 1080 + Math.floor(Math.random() * 360);
+    ruleta.style.transform = `rotate(${gradosAleatorios}deg)`;
 
-function registrarEvento(
-  telegramId,
-  nombre,
-  tipo,
-  detalle
-) {
+    if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
 
-  const ss =
-    SpreadsheetApp.openById(SHEET_ID);
+    setTimeout(() => {
+      const gano = Math.random() < 0.01;
 
-  let hoja =
-    ss.getSheetByName('Eventos');
-
-  if (!hoja) {
-
-    hoja = ss.insertSheet('Eventos');
-
-    hoja.appendRow([
-      'Fecha',
-      'Chat ID',
-      'Nombre',
-      'Tipo',
-      'Detalle'
-    ]);
+      if (gano) {
+        premioGanadoTemp = "🖼️ Wallpaper Exclusivo de Inspiración";
+        lanzarModalPremio("¡Felicidades!", "¡Increíble! Has ganado el premio mayor: un Wallpaper Exclusivo de Inspiración.", "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300");
+        enviarASheets("Ruleta", "¡Ganó premio mayor (1%)!");
+      } else {
+        premioGanadoTemp = "";
+        lanzarModalPremio("¡Sigue intentando!", "Casi lo logras. La constancia trae bendiciones, vuelve mañana para otro intento.", "https://images.unsplash.com/photo-1448375240586-882707db888b?w=300");
+        enviarASheets("Ruleta", "No ganó");
+      }
+    }, 3000);
   }
 
-  hoja.appendRow([
-    new Date(),
-    telegramId,
-    nombre,
-    tipo,
-    detalle
-  ]);
-}
+  function lanzarModalPremio(titulo, descripcion, imagenUrl) {
+    document.getElementById('tituloPremio').innerText = titulo;
+    document.getElementById('descPremio').innerText = descripcion;
+    document.getElementById('imgPremio').src = imagenUrl;
+    document.getElementById('modalPremio').style.display = 'flex';
 
-
-// =====================================================
-// ENVIAR MENSAJE A TELEGRAM
-// =====================================================
-
-function enviarMensaje(
-  chatId,
-  texto
-) {
-
-  if (!chatId) {
-    return;
-  }
-
-  const url =
-    'https://api.telegram.org/bot' +
-    BOT_TOKEN +
-    '/sendMessage';
-
-
-  const payload = {
-
-    chat_id: chatId,
-
-    text: texto,
-
-    parse_mode: 'Markdown'
-  };
-
-
-  UrlFetchApp.fetch(
-    url,
-    {
-      method: 'post',
-      contentType: 'application/json',
-      payload: JSON.stringify(payload),
-      muteHttpExceptions: true
+    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    
+    if (titulo.includes("Felicidades")) {
+      confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+      agregarRegalo(premioGanadoTemp);
     }
-  );
-}
-
-
-// =====================================================
-// RECORDATORIO DIARIO
-// =====================================================
-
-function enviarRecordatorioDiario() {
-
-  const ss =
-    SpreadsheetApp.openById(SHEET_ID);
-
-  const hoja =
-    ss.getSheetByName('Usuarios');
-
-  if (!hoja) {
-    return;
   }
 
-  const datos =
-    hoja.getDataRange().getValues();
+  function cerrarModalPremio() {
+    document.getElementById('modalPremio').style.display = 'none';
+  }
 
+  // --- SENDERO ---
+  let temporizadorIntervalo = null;
+  const FASES_TEXTOS = [
+    "Etapa 1: Silencio y Desconexión (2 min)",
+    "Etapa 2: Lectura y Meditación (2 min)",
+    "Etapa 3: Petición y Súplica (2 min)",
+    "Etapa 4: Agradecimiento y Paz (2 min)"
+  ];
 
-  const mensaje =
-    '🙏 ¡Hola, peregrino!\n\n' +
-    'Este es tu recordatorio de *Cada Día con Dios*.\n\n' +
-    'Entra a la Mini App y aparta hoy tu momento de oración. 🔥';
+  function iniciarSenderoPeregrino() {
+    if (temporizadorIntervalo) return;
 
+    let tiempoEtapaSegundos = 120;
+    let etapaActualIndex = 0;
+    const relojElemento = document.getElementById('reloj-peregrino');
+    const instruccionElemento = document.getElementById('instruccion-peregrino');
+    const btnIniciar = document.getElementById('btn-iniciar-reloj');
 
-  for (
-    let i = 1;
-    i < datos.length;
-    i++
-  ) {
+    btnIniciar.disabled = true;
+    btnIniciar.style.opacity = "0.6";
+    btnIniciar.innerText = "En meditación profunda...";
 
-    const chatId =
-      datos[i][0];
+    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
 
-    if (!chatId) {
-      continue;
+    actualizarIconosFase(0);
+    instruccionElemento.innerText = FASES_TEXTOS[0];
+
+    temporizadorIntervalo = setInterval(() => {
+      tiempoEtapaSegundos--;
+
+      let minutos = Math.floor(tiempoEtapaSegundos / 60);
+      let segundos = tiempoEtapaSegundos % 60;
+      relojElemento.innerText = (minutos < 10 ? "0" : "") + minutos + ":" + (segundos < 10 ? "0" : "") + segundos;
+
+      if (tiempoEtapaSegundos <= 0) {
+        etapaActualIndex++;
+        if (etapaActualIndex > 3) {
+          clearInterval(temporizadorIntervalo);
+          temporizadorIntervalo = null;
+          relojElemento.innerText = "00:00";
+          instruccionElemento.innerText = "✨ ¡Has completado los 8 minutos de tu Sendero!";
+          btnIniciar.innerText = "¡Recorrido Finalizado! 🙏";
+          btnIniciar.style.background = "#7c9885";
+          
+          if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+          confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+          enviarASheets("Sendero del Peregrino", "Completó los 8 minutos de meditación guiada");
+          return;
+        }
+        tiempoEtapaSegundos = 120;
+        actualizarIconosFase(etapaActualIndex);
+        instruccionElemento.innerText = FASES_TEXTOS[etapaActualIndex];
+      }
+    }, 1000);
+  }
+
+  function actualizarIconosFase(indiceActivo) {
+    for (let i = 0; i < 4; i++) {
+      const iconoElem = document.getElementById(`icon-step-${i}`);
+      if (iconoElem) {
+        if (i === indiceActivo) {
+          iconoElem.classList.add('active');
+        } else {
+          iconoElem.classList.remove('active');
+        }
+      }
     }
-
-    enviarMensaje(
-      chatId,
-      mensaje
-    );
   }
-}
+
+  // --- AUDIO AMBIENTAL ROBUSTO (HTML5 nativo con control directo) ---
+  const music = document.getElementById("bg-music");
+  const audioStatus = document.getElementById("audio-status");
+  const audioBtn = document.getElementById("audioBtn");
+
+  function toggleAudio() {
+    if (music.paused) {
+      music.play().then(() => {
+        audioBtn.textContent = "Pausar";
+        audioStatus.textContent = "🎵 Música: Reproduciendo";
+      }).catch(e => {
+        console.log("Error al reproducir audio:", e);
+        alert("Toque nuevamente para permitir la reproducción de audio en este navegador.");
+      });
+    } else {
+      music.pause();
+      audioBtn.textContent = "Reproducir";
+      audioStatus.textContent = "🎵 Música: Pausada";
+    }
+  }
+</script>
+
+</body>
+</html>
