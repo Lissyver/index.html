@@ -512,6 +512,26 @@
   if (tg) { tg.ready(); tg.expand(); }
 
   document.addEventListener("DOMContentLoaded", () => {
+    consultarEstadoServidor(function(estado) {
+
+  if (!estado || !estado.ok) {
+    return;
+  }
+
+  const datosRacha = {
+    dias: Number(estado.racha) || 0,
+    record: Number(estado.record) || 0,
+    ultimoRegistro: estado.ultimoRegistro || ""
+  };
+
+  localStorage.setItem(
+    "cada_dia_con_dios_racha_v2",
+    JSON.stringify(datosRacha)
+  );
+
+  actualizarVistaRacha();
+
+});
     actualizarVistaRacha();
     cargarIntenciones();
     verificarEstadoRuleta();
