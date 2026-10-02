@@ -532,15 +532,51 @@
   }
 
   // --- GOOGLE SHEETS ---
-  function enviarASheets(tipoDato, detalleDato) {
-    if (!URL_GOOGLE_SCRIPT) return;
-    fetch(URL_GOOGLE_SCRIPT, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tipo: tipoDato, detalle: detalleDato })
-    }).catch(err => console.error("Error al enviar a Sheets:", err));
+  // --- GOOGLE SHEETS ---
+function obtenerUsuarioTelegram() {
+  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
+    const usuario = window.Telegram.WebApp.initDataUnsafe.user;
+    
+    if (usuario) {
+      return {
+        telegramId: usuario.id || "",
+        nombre: usuario.first_name || "",
+        username: usuario.username || ""
+      };
+    }
   }
+
+  return {
+    telegramId: "",
+    nombre: "",
+    username: ""
+  };
+}
+
+function enviarASheets(tipoDato, detalleDato) {
+  if (!URL_GOOGLE_SCRIPT) return;
+
+  const usuario = obtenerUsuarioTelegram();
+
+  const datos = {
+    tipo: tipoDato,
+    detalle: detalleDato,
+    telegramId: usuario.telegramId,
+    nombre: usuario.nombre,
+    username: usuario.username
+  };
+
+  fetch(URL_GOOGLE_SCRIPT, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8"
+    },
+    body: JSON.stringify(datos)
+  }).catch(err => {
+    console.error("Error al enviar a Sheets:", err);
+  });
+}
 
   // --- RACHA Y RECORDATORIO VISUAL ---
   function obtenerDatosRacha() {
