@@ -609,8 +609,8 @@ function enviarASheets(tipoDato, detalleDato) {
   function registrarDiaHoy() {
     const hoy = new Date().toDateString();
     let data = obtenerDatosRacha();
-    if (data.ultimoRegistro === hoy) return;
-
+   // PRUEBA TEMPORAL
+// if (data.ultimoRegistro === hoy) return;
     if (data.ultimoRegistro) {
       const fechaUltima = new Date(data.ultimoRegistro);
       const fechaActual = new Date(hoy);
