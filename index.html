@@ -445,14 +445,9 @@ textarea {
   <p id="instruccion-peregrino">Aparta 8 minutos de silencio y meditación guiada (2 min por etapa).</p>
   
   <div style="background:var(--bg-grad-2);padding:10px 14px;border-radius:12px;border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;">
-    <span id="audio-status" style="font-size:.8rem;">🎵 Música: Pausada</span>
+    <span id="audio-status" style="font-size:.8rem;">🎵 Meditación: Pausada</span>
     <button id="audioBtn" onclick="toggleAudio()" style="background:var(--accent);border:none;color:#15120e;padding:6px 14px;border-radius:15px;font-weight:bold;cursor:pointer;font-size:.8rem;">Reproducir</button>
   </div>
-
-  <!-- NUEVO AUDIO AMBIENTAL RELAJANTE TIPO MEDITACIÓN -->
-  <audio id="bg-music" loop preload="auto">
-    <source src="https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=meditation-flute-and-water-110904.mp3" type="audio/mpeg">
-  </audio>
 
   <div class="peregrino-iconos-grid">
     <div id="icon-step-0" class="peregrino-icono-step active">🕯️</div>
@@ -527,7 +522,6 @@ if (tg) {
 document.addEventListener("DOMContentLoaded", function() {
   cargarInterfaz();
   sincronizarEstadoServidor();
-  iniciarAudio();
 });
 
 function cargarInterfaz() {
@@ -796,28 +790,59 @@ function lanzarModalPremio(titulo, descripcion, imagen) {
 function cerrarModalPremio() { document.getElementById("modalPremio").style.display = "none"; }
 
 /* =====================================================
-   SENDERO Y AUDIO
+   SENDERO Y AUDIO NATIVO RELAJANTE (SIN ARCHIVOS EXTERNOS)
 ===================================================== */
-let music = null; let audioStatus = null; let audioBtn = null;
-
-function iniciarAudio() {
-  music = document.getElementById("bg-music");
-  audioStatus = document.getElementById("audio-status");
-  audioBtn = document.getElementById("audioBtn");
-}
+let audioCtx = null;
+let oscilador1 = null;
+let oscilador2 = null;
+let gananciaNode = null;
+let isPlaying = false;
 
 function toggleAudio() {
-  if (!music) iniciarAudio();
-  if (!music) return;
-  if (music.paused) {
-    music.play().then(() => {
+  const audioStatus = document.getElementById("audio-status");
+  const audioBtn = document.getElementById("audioBtn");
+
+  if (!isPlaying) {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+
+      // Creamos dos osciladores para generar un acorde armónico profundo tipo cuenco tibetano
+      oscilador1 = audioCtx.createOscillator();
+      oscilador2 = audioCtx.createOscillator();
+      gananciaNode = audioCtx.createGain();
+
+      // Frecuencias suaves y angelicales (acorde pacífico)
+      oscilador1.type = 'sine';
+      oscilador1.frequency.setValueAtTime(174.61, audioCtx.currentTime); // Nota F3 (relajación profunda)
+
+      oscilador2.type = 'sine';
+      oscilador2.frequency.setValueAtTime(261.63, audioCtx.currentTime); // Nota C4 (armonía)
+
+      // Volumen muy suave y envolvente
+      gananciaNode.gain.setValueAtTime(0.02, audioCtx.currentTime);
+
+      oscilador1.connect(gananciaNode);
+      oscilador2.connect(gananciaNode);
+      gananciaNode.connect(audioCtx.destination);
+
+      oscilador1.start();
+      oscilador2.start();
+
+      isPlaying = true;
       if (audioBtn) audioBtn.innerText = "Pausar";
-      if (audioStatus) audioStatus.innerText = "🎵 Música: Reproduciendo";
-    }).catch(() => alert("Toca nuevamente para permitir la reproducción de audio."));
+      if (audioStatus) audioStatus.innerText = "🎵 Meditación: Reproduciendo";
+    } catch(e) {
+      alert("Toca nuevamente para permitir la reproducción de audio.");
+    }
   } else {
-    music.pause();
+    if (audioCtx) {
+      audioCtx.close();
+      audioCtx = null;
+    }
+    isPlaying = false;
     if (audioBtn) audioBtn.innerText = "Reproducir";
-    if (audioStatus) audioStatus.innerText = "🎵 Música: Pausada";
+    if (audioStatus) audioStatus.innerText = "🎵 Meditación: Pausada";
   }
 }
 
