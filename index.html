@@ -359,9 +359,7 @@ textarea {
   <p>Tu espacio de fe, comunidad y oración</p>
 </div>
 
-<div id="bannerRecordatorio"
-     class="recordatorio-banner"
-     onclick="showSection('sec-registrar')">
+<div id="bannerRecordatorio" class="recordatorio-banner" onclick="showSection('sec-registrar')">
   <span>🔔</span>
   <div>
     <h4>¡Aún no has registrado tu día!</h4>
@@ -370,476 +368,166 @@ textarea {
 </div>
 
 <div id="main-menu" class="menu-grid">
-
-<button class="menu-btn" onclick="showSection('sec-registrar')">
-  <span>📅</span>Registrar mi día
-</button>
-
-<button class="menu-btn" onclick="showSection('sec-video')">
-  <span>▶️</span>Video del día
-</button>
-
-<button class="menu-btn" onclick="showSection('sec-racha')">
-  <span>🔥</span>Mi Racha
-</button>
-
-<button class="menu-btn" onclick="showSection('sec-regalos')">
-  <span>🎁</span>Mis Regalos
-</button>
-
-<button class="menu-btn full" onclick="showSection('sec-intenciones')">
-  <span>💬</span>Tablero de Intenciones
-</button>
-
-<button class="menu-btn" onclick="showSection('sec-ruleta')">
-  <span>🎡</span>Ruleta Ganadora
-</button>
-
-<button class="menu-btn" onclick="showSection('sec-sendero')">
-  <span>⏳</span>Sendero del Peregrino
-</button>
-
-<button class="menu-btn" onclick="showSection('sec-tienda')">
-  <span>🛍️</span>Tienda
-</button>
-
-<button class="menu-btn" onclick="showSection('sec-donar')">
-  <span>❤</span>Donar
-</button>
-
+  <button class="menu-btn" onclick="showSection('sec-registrar')"><span>📅</span>Registrar mi día</button>
+  <button class="menu-btn" onclick="showSection('sec-video')"><span>▶️</span>Video del día</button>
+  <button class="menu-btn" onclick="showSection('sec-racha')"><span>🔥</span>Mi Racha</button>
+  <button class="menu-btn" onclick="showSection('sec-regalos')"><span>🎁</span>Mis Regalos</button>
+  <button class="menu-btn full" onclick="showSection('sec-intenciones')"><span>💬</span>Tablero de Intenciones</button>
+  <button class="menu-btn" onclick="showSection('sec-ruleta')"><span>🎡</span>Ruleta Ganadora</button>
+  <button class="menu-btn" onclick="showSection('sec-sendero')"><span>⏳</span>Sendero del Peregrino</button>
+  <button class="menu-btn" onclick="showSection('sec-tienda')"><span>🛍</span>Tienda</button>
+  <button class="menu-btn" onclick="showSection('sec-donar')"><span>❤</span>Donar</button>
 </div>
-
 
 <!-- REGISTRAR -->
-
 <div id="sec-registrar" class="section">
-
-<button class="back-btn" onclick="showMenu()">← Volver al menú</button>
-
-<h2>📅 Registrar mi día</h2>
-
-<p id="estado-registro-txt">
-Confirma que hoy has apartado tu tiempo de oración para mantener encendida tu racha.
-</p>
-
-<button
- id="btn-registrar-hoy"
- class="main-btn"
- onclick="registrarDiaHoy()">
-Registrar oración de hoy
-</button>
-
+  <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
+  <h2>📅 Registrar mi día</h2>
+  <p id="estado-registro-txt">Confirma que hoy has apartado tu tiempo de oración para mantener encendida tu racha.</p>
+  <button id="btn-registrar-hoy" class="main-btn" onclick="registrarDiaHoy()">Registrar oración de hoy</button>
 </div>
-
 
 <!-- VIDEO -->
-
 <div id="sec-video" class="section">
-
-<button class="back-btn" onclick="showMenu()">← Volver al menú</button>
-
-<h2>▶ Video del Día</h2>
-
-<p>
-<b>DIOS TE DICE HOY: RECOMPENSARÉ TUS AÑOS MALOS CON ALEGRÍA | SALMO 90</b>
-</p>
-
-<div style="
-position:relative;
-width:100%;
-padding-bottom:177.77%;
-height:0;
-background:#000;
-border-radius:12px;
-overflow:hidden;
-margin-top:12px;">
-
-<iframe
-src="https://www.youtube.com/embed/JNH2ef1a220"
-title="Video del Día"
-style="
-position:absolute;
-top:0;
-left:0;
-width:100%;
-height:100%;
-border:0;"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-allowfullscreen>
-</iframe>
-
+  <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
+  <h2>▶ Video del Día</h2>
+  <p><b>DIOS TE DICE HOY: RECOMPENSARÉ TUS AÑOS MALOS CON ALEGRÍA | SALMO 90</b></p>
+  <div style="position:relative;width:100%;padding-bottom:177.77%;height:0;background:#000;border-radius:12px;overflow:hidden;margin-top:12px;">
+    <iframe src="https://www.youtube.com/embed/JNH2ef1a220" title="Video del Día" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
 </div>
-
-</div>
-
 
 <!-- RACHA -->
-
 <div id="sec-racha" class="section">
-
-<button class="back-btn" onclick="showMenu()">← Volver al menú</button>
-
-<h2>🔥 Tu Racha Actual</h2>
-
-<div style="text-align:center;padding:20px 0;">
-
-<span style="font-size:3rem;">🔥</span>
-
-<h3 id="racha-numero"
-style="font-size:2rem;color:var(--accent);margin:5px 0;">
-0 Días
-</h3>
-
-<p>
-¡Constancia diaria! Cada día cuenta en tu camino espiritual.
-</p>
-
+  <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
+  <h2>🔥 Tu Racha Actual</h2>
+  <div style="text-align:center;padding:20px 0;">
+    <span style="font-size:3rem;">🔥</span>
+    <h3 id="racha-numero" style="font-size:2rem;color:var(--accent);margin:5px 0;">0 Días</h3>
+    <p>¡Constancia diaria! Cada día cuenta en tu camino espiritual.</p>
+  </div>
 </div>
-
-</div>
-
 
 <!-- REGALOS -->
-
 <div id="sec-regalos" class="section">
-
-<button class="back-btn" onclick="showMenu()">← Volver al menú</button>
-
-<h2>🎁 Tus Regalos Desbloqueados</h2>
-
-<p>
-Aquí aparecerán tus recompensas a medida que cumplas tus días de racha.
-</p>
-
-<div id="contenedor-lista-regalos" style="margin-top:15px;"></div>
-
+  <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
+  <h2>🎁 Tus Regalos Desbloqueados</h2>
+  <p>Aquí aparecerán tus recompensas a medida que cumplas tus días de racha o ganes en la ruleta.</p>
+  <div id="contenedor-lista-regalos" style="margin-top:15px;"></div>
 </div>
-
 
 <!-- INTENCIONES -->
-
 <div id="sec-intenciones" class="section">
-
-<button class="back-btn" onclick="showMenu()">← Volver al menú</button>
-
-<h2>💬 Tablero de Intenciones</h2>
-
-<p>
-Comparte tu petición para que otros hermanos oren por ti.
-</p>
-
-<textarea
-id="input-intencion"
-placeholder="Escribe tu intención aquí...">
-</textarea>
-
-<button
-class="main-btn"
-style="margin-bottom:20px;"
-onclick="publicarIntencion()">
-Publicar intención
-</button>
-
-<div id="contenedor-lista-intenciones"></div>
-
+  <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
+  <h2>💬 Tablero de Intenciones</h2>
+  <p>Comparte tu petición para que otros hermanos oren por ti.</p>
+  <textarea id="input-intencion" placeholder="Escribe tu intención aquí..."></textarea>
+  <button class="main-btn" style="margin-bottom:20px;" onclick="publicarIntencion()">Publicar intención</button>
+  <div id="contenedor-lista-intenciones"></div>
 </div>
-
 
 <!-- RULETA -->
-
 <div id="sec-ruleta" class="section">
-
-<button class="back-btn" onclick="showMenu()">← Volver al menú</button>
-
-<h2>🎡 Ruleta Ganadora</h2>
-
-<p>
-Gira la ruleta una vez al día y prueba tu fortuna.
-</p>
-
-<div class="ruleta-container">
-
-<div id="ruletaCirculo" class="ruleta-circulo">
-🎯
+  <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
+  <h2>🎡 Ruleta Ganadora</h2>
+  <p>Gira la ruleta una vez al día y prueba tu fortuna.</p>
+  <div class="ruleta-container">
+    <div id="ruletaCirculo" class="ruleta-circulo">🎯</div>
+  </div>
+  <button class="main-btn" id="btnGirarRuleta" onclick="girarRuleta()">¡Girar la Ruleta!</button>
+  <p id="textoEstadoRuleta" style="text-align:center;font-size:.8rem;margin-top:8px;"></p>
 </div>
-
-</div>
-
-<button
-class="main-btn"
-id="btnGirarRuleta"
-onclick="girarRuleta()">
-¡Girar la Ruleta!
-</button>
-
-<p
-id="textoEstadoRuleta"
-style="text-align:center;font-size:.8rem;margin-top:8px;">
-</p>
-
-</div>
-
 
 <!-- SENDERO -->
-
 <div id="sec-sendero" class="section">
+  <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
+  <h2>⏳ Sendero del Peregrino</h2>
+  <p id="instruccion-peregrino">Aparta 8 minutos de silencio y meditación guiada (2 min por etapa).</p>
+  
+  <div style="background:var(--bg-grad-2);padding:10px 14px;border-radius:12px;border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;">
+    <span id="audio-status" style="font-size:.8rem;">🎵 Música: Pausada</span>
+    <button id="audioBtn" onclick="toggleAudio()" style="background:var(--accent);border:none;color:#15120e;padding:6px 14px;border-radius:15px;font-weight:bold;cursor:pointer;font-size:.8rem;">Reproducir</button>
+  </div>
 
-<button class="back-btn" onclick="showMenu()">← Volver al menú</button>
+  <audio id="bg-music" loop preload="auto">
+    <source src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" type="audio/mpeg">
+  </audio>
 
-<h2>⏳ Sendero del Peregrino</h2>
+  <div class="peregrino-iconos-grid">
+    <div id="icon-step-0" class="peregrino-icono-step active">🕯️</div>
+    <div id="icon-step-1" class="peregrino-icono-step">📖</div>
+    <div id="icon-step-2" class="peregrino-icono-step">🙏</div>
+    <div id="icon-step-3" class="peregrino-icono-step">🕊️</div>
+  </div>
 
-<p id="instruccion-peregrino">
-Aparta 8 minutos de silencio y meditación guiada (2 min por etapa).
-</p>
+  <div id="reloj-peregrino" style="text-align:center;font-size:2.5rem;margin:15px 0;color:var(--accent);font-weight:bold;">02:00</div>
+  <button class="main-btn" id="btn-iniciar-reloj" onclick="iniciarSenderoPeregrino()">Iniciar Tiempo de Oración</button>
 
-<div style="
-background:var(--bg-grad-2);
-padding:10px 14px;
-border-radius:12px;
-border:1px solid var(--border);
-display:flex;
-align-items:center;
-justify-content:space-between;
-margin-bottom:15px;">
-
-<span id="audio-status" style="font-size:.8rem;">
-🎵 Música: Pausada
-</span>
-
-<button
-id="audioBtn"
-onclick="toggleAudio()"
-style="
-background:var(--accent);
-border:none;
-color:#15120e;
-padding:6px 14px;
-border-radius:15px;
-font-weight:bold;
-cursor:pointer;
-font-size:.8rem;">
-Reproducir
-</button>
-
+  <div style="margin-top:25px;border-top:1px solid var(--border);padding-top:15px;">
+    <p style="font-size:.85rem;margin:0 0 6px;color:var(--accent);">🌍 ¿De dónde nos visitas?</p>
+    <div class="form-group-origen">
+      <input type="text" id="input-origen" placeholder="Ciudad o país">
+      <button class="main-btn" style="margin-top:0;width:auto;padding:0 15px;" onclick="registrarOrigen()">Añadir</button>
+    </div>
+    <div class="visitors-list" id="contenedor-visitantes"></div>
+  </div>
 </div>
-
-<audio id="bg-music" loop preload="auto">
-<source
-src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=meditation-flute-and-water-110904.mp3"
-type="audio/mpeg">
-</audio>
-
-<div class="peregrino-iconos-grid">
-
-<div id="icon-step-0"
-class="peregrino-icono-step active">
-🕯️
-</div>
-
-<div id="icon-step-1"
-class="peregrino-icono-step">
-📖
-</div>
-
-<div id="icon-step-2"
-class="peregrino-icono-step">
-🙏
-</div>
-
-<div id="icon-step-3"
-class="peregrino-icono-step">
-🕊️
-</div>
-
-</div>
-
-<div
-id="reloj-peregrino"
-style="
-text-align:center;
-font-size:2.5rem;
-margin:15px 0;
-color:var(--accent);
-font-weight:bold;">
-02:00
-</div>
-
-<button
-class="main-btn"
-id="btn-iniciar-reloj"
-onclick="iniciarSenderoPeregrino()">
-Iniciar Tiempo de Oración
-</button>
-
-<div style="
-margin-top:25px;
-border-top:1px solid var(--border);
-padding-top:15px;">
-
-<p style="
-font-size:.85rem;
-margin:0 0 6px;
-color:var(--accent);">
-🌍 ¿De dónde nos visitas?
-</p>
-
-<div class="form-group-origen">
-
-<input
-type="text"
-id="input-origen"
-placeholder="Ciudad o país">
-
-<button
-class="main-btn"
-style="margin-top:0;width:auto;padding:0 15px;"
-onclick="registrarOrigen()">
-Añadir
-</button>
-
-</div>
-
-<div
-class="visitors-list"
-id="contenedor-visitantes">
-</div>
-
-</div>
-
-</div>
-
 
 <!-- TIENDA -->
-
 <div id="sec-tienda" class="section">
-
-<button class="back-btn" onclick="showMenu()">← Volver al menú</button>
-
-<h2>🛍️ Tienda</h2>
-
-<p>
-Adquiere libros, devocionales impresos y recursos exclusivos.
-</p>
-
-<div style="
-background:var(--bg-grad-2);
-padding:15px;
-border-radius:12px;
-margin-top:12px;
-text-align:center;">
-
-<p style="color:var(--text);font-weight:bold;">
-Devocional 40 Días en el Desierto
-</p>
-
-<p>$12.00 USD</p>
-
-<button
-class="main-btn"
-onclick="showSection('sec-donar')">
-Comprar ahora
-</button>
-
+  <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
+  <h2>🛍️ Tienda</h2>
+  <p>Adquiere libros, devocionales impresos y recursos exclusivos.</p>
+  <div style="background:var(--bg-grad-2);padding:15px;border-radius:12px;margin-top:12px;text-align:center;">
+    <p style="color:var(--text);font-weight:bold;">Devocional 40 Días en el Desierto</p>
+    <p>$12.00 USD</p>
+    <button class="main-btn" onclick="showSection('sec-donar')">Comprar ahora</button>
+  </div>
 </div>
-
-</div>
-
 
 <!-- DONAR -->
-
 <div id="sec-donar" class="section">
-
-<button class="back-btn" onclick="showMenu()">← Volver al menú</button>
-
-<h2>❤ Apoya este Ministerio</h2>
-
-<p style="line-height:1.5;">
-Si gustas colaborar con el canal para seguir llevándoles gratis la palabra,
-puedes hacerlo a través de nuestros enlaces oficiales.
-<br><br>
-También puedes colaborar adquiriendo nuestros productos en la sección de la
-<b>Tienda</b>.
-</p>
-
-<a
-href="https://www.paypal.com/paypalme/my/profile"
-target="_blank"
-class="main-btn"
-style="margin-bottom:12px;background:#0070ba;color:white;">
-Donar con PayPal 🌐
-</a>
-
-<a
-href="https://app.binance.com/uni-qr/uEYB3enK"
-target="_blank"
-class="main-btn"
-style="background:#f0b90b;color:#15120e;">
-Donar con Binance 🪙
-</a>
-
+  <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
+  <h2>❤ Apoya este Ministerio</h2>
+  <p style="line-height:1.5;">Si gustas colaborar con el canal para seguir llevándoles gratis la palabra, puedes hacerlo a través de nuestros enlaces oficiales.<br><br>También puedes colaborar adquiriendo nuestros productos en la sección de la <b>Tienda</b>.</p>
+  <a href="https://www.paypal.com/paypalme/my/profile" target="_blank" class="main-btn" style="margin-bottom:12px;background:#0070ba;color:white;">Donar con PayPal 🌐</a>
+  <a href="https://app.binance.com/uni-qr/uEYB3enK" target="_blank" class="main-btn" style="background:#f0b90b;color:#15120e;">Donar con Binance 🪙</a>
 </div>
 
 </div>
 
-
-<!-- MODAL -->
-
+<!-- MODAL DE PREMIOS -->
 <div id="modalPremio" class="modal-premio">
-
-<div class="modal-content">
-
-<img id="imgPremio" src="" alt="Premio">
-
-<h2 id="tituloPremio">
-¡Felicidades!
-</h2>
-
-<p id="descPremio"></p>
-
-<button
-class="main-btn"
-onclick="cerrarModalPremio()">
-Aceptar 🎉
-</button>
-
+  <div class="modal-content">
+    <img id="imgPremio" src="" alt="Premio">
+    <h2 id="tituloPremio">¡Felicidades!</h2>
+    <p id="descPremio"></p>
+    <button class="main-btn" onclick="cerrarModalPremio()">Aceptar 🎉</button>
+  </div>
 </div>
-
-</div>
-
 
 <script>
-
 /* =====================================================
-   CONFIGURACIÓN
+   CONFIGURACIÓN PRINCIPAL
 ===================================================== */
-
 const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbzhH98vWYHVshdZ82b0cDXpd8QvvFiWGGQzqqs2p9dTmizZrmI441_inUkMdYxFyoacnw/exec";
 
 const CLAVE_RACHA = "cada_dia_con_dios_racha_v2";
 
-
 /* =====================================================
-   TELEGRAM
+   TELEGRAM INICIALIZACIÓN
 ===================================================== */
-
 const tg = window.Telegram ? window.Telegram.WebApp : null;
-
 if (tg) {
   tg.ready();
   tg.expand();
 }
-
-
-/* =====================================================
-   INICIO
-===================================================== */
 
 document.addEventListener("DOMContentLoaded", function() {
   cargarInterfaz();
   sincronizarEstadoServidor();
   iniciarAudio();
 });
-
 
 function cargarInterfaz() {
   actualizarVistaRacha();
@@ -849,88 +537,53 @@ function cargarInterfaz() {
   cargarVisitantes();
 }
 
-
 /* =====================================================
    NAVEGACIÓN
 ===================================================== */
-
 function showSection(id) {
   const menu = document.getElementById("main-menu");
   if (menu) menu.style.display = "none";
-
-  document.querySelectorAll(".section").forEach(function(section) {
-    section.classList.remove("active");
-  });
-
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
   const section = document.getElementById(id);
   if (section) section.classList.add("active");
-
-  if (tg && tg.HapticFeedback) {
-    tg.HapticFeedback.impactOccurred("light");
-  }
+  if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred("light");
 }
 
 function showMenu() {
-  document.querySelectorAll(".section").forEach(function(section) {
-    section.classList.remove("active");
-  });
-
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
   const menu = document.getElementById("main-menu");
   if (menu) menu.style.display = "grid";
 }
 
-
 /* =====================================================
-   USUARIO TELEGRAM
+   USUARIO Y ESTADO LOCAL
 ===================================================== */
-
 function obtenerUsuarioTelegram() {
   try {
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
-      const user = window.Telegram.WebApp.initDataUnsafe.user;
-      if (user) {
-        return {
-          telegramId: String(user.id || ""),
-          nombre: user.first_name || "Peregrino",
-          username: user.username || ""
-        };
-      }
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      const user = tg.initDataUnsafe.user;
+      return { telegramId: String(user.id || ""), nombre: user.first_name || "Peregrino", username: user.username || "" };
     }
-  } catch(error) {
-    console.error(error);
-  }
-
+  } catch(e) {}
   return { telegramId: "", nombre: "Peregrino", username: "" };
 }
 
-
-/* =====================================================
-   DATOS LOCALES
-===================================================== */
-
 function obtenerDatosRacha() {
-  try {
-    return JSON.parse(localStorage.getItem(CLAVE_RACHA)) || { dias: 0, record: 0, ultimoRegistro: "" };
-  } catch(error) {
-    return { dias: 0, record: 0, ultimoRegistro: "" };
-  }
+  return JSON.parse(localStorage.getItem(CLAVE_RACHA)) || { dias: 0, record: 0, ultimoRegistro: "" };
 }
 
 function guardarDatosRacha(data) {
   localStorage.setItem(CLAVE_RACHA, JSON.stringify(data));
 }
 
-
-/* =====================================================
-   MOSTRAR RACHA
-===================================================== */
+function fechaLocalPanama() {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Panama", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+}
 
 function actualizarVistaRacha() {
   const data = obtenerDatosRacha();
   const numero = document.getElementById("racha-numero");
-  if (numero) {
-    numero.innerText = data.dias + (data.dias === 1 ? " Día" : " Días");
-  }
+  if (numero) numero.innerText = data.dias + (data.dias === 1 ? " Día" : " Días");
 
   const hoy = fechaLocalPanama();
   const boton = document.getElementById("btn-registrar-hoy");
@@ -939,46 +592,21 @@ function actualizarVistaRacha() {
 
   if (data.ultimoRegistro === hoy) {
     if (banner) banner.style.display = "none";
-    if (boton) {
-      boton.disabled = true;
-      boton.innerText = "✓ Oración registrada hoy";
-      boton.style.background = "#7c9885";
-    }
+    if (boton) { boton.disabled = true; boton.innerText = "✓ Oración registrada hoy"; boton.style.background = "#7c9885"; }
     if (texto) texto.innerText = "¡Ya cumpliste con tu espacio de hoy! Vuelve mañana.";
   } else {
     if (banner) banner.style.display = "flex";
-    if (boton) {
-      boton.disabled = false;
-      boton.innerText = "Registrar oración de hoy";
-      boton.style.background = "";
-    }
+    if (boton) { boton.disabled = false; boton.innerText = "Registrar oración de hoy"; boton.style.background = ""; }
     if (texto) texto.innerText = "Confirma que hoy has apartado tu tiempo de oración para mantener encendida tu racha.";
   }
 }
 
-
 /* =====================================================
-   FECHA
+   CONEXIÓN CON GOOGLE SHEETS
 ===================================================== */
-
-function fechaLocalPanama() {
-  const ahora = new Date();
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Panama", year: "numeric", month: "2-digit", day: "2-digit"
-  }).format(ahora);
-}
-
-
-/* =====================================================
-   CONSULTAR GOOGLE SHEETS
-===================================================== */
-
 function consultarEstadoServidor(callback) {
   const usuario = obtenerUsuarioTelegram();
-  if (!usuario.telegramId) {
-    if (callback) callback(null);
-    return;
-  }
+  if (!usuario.telegramId) return callback && callback(null);
 
   const nombreCallback = "estado_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
   const script = document.createElement("script");
@@ -1004,153 +632,84 @@ function consultarEstadoServidor(callback) {
   document.body.appendChild(script);
 }
 
-
-/* =====================================================
-   SINCRONIZAR RACHA REAL
-===================================================== */
-
 function sincronizarEstadoServidor() {
   consultarEstadoServidor(function(estado) {
     if (!estado || !estado.ok || !estado.encontrado) return;
-
-    const datos = {
-      dias: Number(estado.racha) || 0,
-      record: Number(estado.record) || 0,
-      ultimoRegistro: estado.ultimoRegistro || ""
-    };
-
-    guardarDatosRacha(datos);
+    guardarDatosRacha({ dias: Number(estado.racha)||0, record: Number(estado.record)||0, ultimoRegistro: estado.ultimoRegistro||"" });
     actualizarVistaRacha();
     actualizarRegalosDesdeServidor(estado);
   });
 }
 
-
-/* =====================================================
-   REGISTRAR ORACIÓN
-===================================================== */
-
 function registrarDiaHoy() {
   const usuario = obtenerUsuarioTelegram();
-  if (!usuario.telegramId) {
-    alert("Abre esta aplicación desde Telegram para registrar tu oración.");
-    return;
-  }
+  if (!usuario.telegramId) return alert("Abre esta aplicación desde Telegram.");
 
   const boton = document.getElementById("btn-registrar-hoy");
-  if (boton) {
-    boton.disabled = true;
-    boton.innerText = "Guardando tu oración...";
-  }
-
-  const datos = {
-    tipo: "Registro Diario",
-    telegramId: usuario.telegramId,
-    nombre: usuario.nombre,
-    username: usuario.username
-  };
+  if (boton) { boton.disabled = true; boton.innerText = "Guardando..."; }
 
   fetch(URL_GOOGLE_SCRIPT, {
     method: "POST",
-    body: JSON.stringify(datos)
-  })
-  .then(response => {
+    body: JSON.stringify({ tipo: "Registro Diario", telegramId: usuario.telegramId, nombre: usuario.nombre, username: usuario.username })
+  }).then(() => {
      setTimeout(() => {
         consultarEstadoServidor(function(estado) {
           if (!estado || !estado.ok) {
             if (boton) { boton.disabled = false; boton.innerText = "Registrar oración de hoy"; }
-            alert("No pudimos actualizar tu racha. Intenta nuevamente.");
-            return;
+            return alert("No pudimos actualizar tu racha. Intenta nuevamente.");
           }
-
-          const datosRacha = {
-            dias: Number(estado.racha) || 0,
-            record: Number(estado.record) || 0,
-            ultimoRegistro: estado.ultimoRegistro || ""
-          };
-          guardarDatosRacha(datosRacha);
+          guardarDatosRacha({ dias: Number(estado.racha)||0, record: Number(estado.record)||0, ultimoRegistro: estado.ultimoRegistro||"" });
           actualizarVistaRacha();
           actualizarRegalosDesdeServidor(estado);
 
           if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
           if (typeof confetti === "function") confetti({ particleCount:60, spread:70, origin:{y:.6} });
 
-          if (estado.yaRegistrado) {
-            alert("🙏 Tu oración de hoy ya estaba registrada.");
-          } else if (estado.premio) {
-            alert("🎉 ¡Felicidades!\n\nHas completado " + estado.premio + " de oración.\n\n🏆 Tu recompensa ha sido desbloqueada.");
-          } else {
-            alert("🙏 ¡Registro completado!\n\n🔥 Tu racha actual: " + estado.racha + " día(s).");
-          }
-
-          if (boton) {
-            boton.disabled = true; 
-            boton.innerText = "✓ Oración registrada hoy";
-            boton.style.background = "#7c9885";
-          }
+          if (estado.yaRegistrado) alert("🙏 Tu oración de hoy ya estaba registrada.");
+          else if (estado.premio) alert("🎉 ¡Felicidades!\nHas completado " + estado.premio + " días.\n🏆 Recompensa desbloqueada.");
+          else alert("🙏 ¡Registro completado!\n🔥 Racha actual: " + estado.racha + " día(s).");
         });
      }, 1500); 
-  })
-  .catch(function(error) {
-    console.error(error);
+  }).catch(() => {
     if (boton) { boton.disabled = false; boton.innerText = "Registrar oración de hoy"; }
     alert("No se pudo conectar con el servidor.");
   });
 }
 
+function enviarASheets(tipoDato, detalleDato) {
+  const usuario = obtenerUsuarioTelegram();
+  if (!usuario.telegramId) return;
+  fetch(URL_GOOGLE_SCRIPT, {
+    method: "POST",
+    body: JSON.stringify({ tipo: tipoDato, detalle: detalleDato, telegramId: usuario.telegramId, nombre: usuario.nombre, username: usuario.username })
+  }).catch(e => console.error(e));
+}
 
 /* =====================================================
-   REGALOS DESDE SHEETS
+   REGALOS Y PREMIOS DE RACHA (CON TUS ENLACES REALES)
 ===================================================== */
-
 function actualizarRegalosDesdeServidor(estado) {
   if (!estado) return;
-
   const premios = estado.premios || {};
-  let regalos = [];
+  let regalos = JSON.parse(localStorage.getItem("peregrino_regalos")) || [];
 
-  if (premios["7"] === "DESBLOQUEADO") regalos.push({ titulo: "🏅 Recompensa de 7 días", enlace: "#" });
-  if (premios["14"] === "DESBLOQUEADO") regalos.push({ titulo: "🥈 Recompensa de 14 días", enlace: "#" });
-  if (premios["21"] === "DESBLOQUEADO") regalos.push({ titulo: "🥇 Recompensa de 21 días", enlace: "#" });
-  if (premios["40"] === "DESBLOQUEADO") regalos.push({ titulo: "💎 Recompensa de 40 días", enlace: "#" });
+  const agregarPremioRacha = (titulo, enlace) => {
+    if (!regalos.some(r => r.titulo === titulo)) regalos.push({ titulo, enlace });
+  };
+
+  if (premios["7"] === "DESBLOQUEADO") agregarPremioRacha("📖 Devocional - Primera Parte", "https://drive.google.com/uc?export=download&id=14c7HzAkUsx4CtXvkbLn6W6UGmlGJNpgW");
+  if (premios["14"] === "DESBLOQUEADO") agregarPremioRacha("📖 Devocional - Segunda Parte", "https://drive.google.com/uc?export=download&id=1VrVHxzSpNiOtvT6i2-Xl07v3VDZ6WFf2");
+  if (premios["21"] === "DESBLOQUEADO") agregarPremioRacha("📖 Devocional - Tercera Parte", "https://drive.google.com/uc?export=download&id=1q0biHE_i5czAdCOlD0020lCkyurs1JzG");
+  if (premios["40"] === "DESBLOQUEADO") agregarPremioRacha("💎 Devocional Completo y Especial 40 Días", "https://drive.google.com/uc?export=download&id=1q0biHE_i5czAdCOlD0020lCkyurs1JzG");
 
   localStorage.setItem("peregrino_regalos", JSON.stringify(regalos));
   cargarRegalos();
 }
 
-
-/* =====================================================
-   ENVIAR OTROS DATOS
-===================================================== */
-
-function enviarASheets(tipoDato, detalleDato) {
-  const usuario = obtenerUsuarioTelegram();
-  if (!usuario.telegramId) return;
-
-  const datos = {
-    tipo: tipoDato,
-    detalle: detalleDato,
-    telegramId: usuario.telegramId,
-    nombre: usuario.nombre,
-    username: usuario.username
-  };
-
-  fetch(URL_GOOGLE_SCRIPT, {
-    method: "POST",
-    body: JSON.stringify(datos)
-  }).catch(error => console.error("Error al enviar evento:", error));
-}
-
-
-/* =====================================================
-   REGALOS
-===================================================== */
-
-function agregarRegalo(titulo) {
+function agregarRegaloRuleta(titulo, enlace) {
   let regalos = JSON.parse(localStorage.getItem("peregrino_regalos")) || [];
-
-  if (!regalos.some(function(r) { return r.titulo === titulo; })) {
-    regalos.push({ titulo: titulo, enlace: "#" });
+  if (!regalos.some(r => r.titulo === titulo)) {
+    regalos.push({ titulo: titulo, enlace: enlace });
     localStorage.setItem("peregrino_regalos", JSON.stringify(regalos));
   }
   cargarRegalos();
@@ -1159,188 +718,69 @@ function agregarRegalo(titulo) {
 function cargarRegalos() {
   const contenedor = document.getElementById("contenedor-lista-regalos");
   if (!contenedor) return;
-
   const regalos = JSON.parse(localStorage.getItem("peregrino_regalos")) || [];
 
   if (regalos.length === 0) {
-    contenedor.innerHTML = `
-      <div style="text-align:center;padding:20px 0;color:var(--text-soft);">
-        <span style="font-size:2.5rem;">🔒</span>
-        <p>Aún no tienes premios. Sigue completando tus días de oración para desbloquear recompensas.</p>
-      </div>
-    `;
+    contenedor.innerHTML = `<div style="text-align:center;padding:20px 0;color:var(--text-soft);"><span style="font-size:2.5rem;">🔒</span><p>Sigue completando tus días o juega en la ruleta para ganar premios.</p></div>`;
     return;
   }
-
   contenedor.innerHTML = "";
-  regalos.forEach(function(regalo) {
-    contenedor.innerHTML += `
-      <div style="background:var(--bg-grad-2); padding:12px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; border:1px solid var(--accent);">
-      <span>${regalo.titulo}</span>
-      <a href="${regalo.enlace}" style="color:var(--accent); text-decoration:none; font-weight:bold; font-size:.85rem;">Descargar</a>
-      </div>
-    `;
+  regalos.forEach(regalo => {
+    contenedor.innerHTML += `<div style="background:var(--bg-grad-2); padding:12px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; border:1px solid var(--accent);">
+      <span style="font-size: 0.9rem;">${regalo.titulo}</span>
+      <a href="${regalo.enlace}" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:bold; font-size:.85rem;">Abrir / Descargar</a>
+      </div>`;
   });
 }
-
 
 /* =====================================================
-   ORIGEN
+   RULETA (4 PREMIOS CON TUS INSIGNIAS REALES)
 ===================================================== */
-
-function registrarOrigen() {
-  const input = document.getElementById("input-origen");
-  const valor = input.value.trim();
-  if (!valor) return;
-
-  let visitantes = JSON.parse(localStorage.getItem("peregrino_visitantes")) || [];
-  visitantes.unshift({ origen: valor, tiempo: "Justo ahora" });
-  localStorage.setItem("peregrino_visitantes", JSON.stringify(visitantes));
-
-  input.value = "";
-  cargarVisitantes();
-  enviarASheets("Origen Peregrino", valor);
-}
-
-function cargarVisitantes() {
-  const contenedor = document.getElementById("contenedor-visitantes");
-  if (!contenedor) return;
-
-  const visitantes = JSON.parse(localStorage.getItem("peregrino_visitantes")) || [];
-
-  if (visitantes.length === 0) {
-    contenedor.innerHTML = `
-      <p style="font-size:.8rem; text-align:center; color:var(--text-soft); margin:5px 0;">
-      Sé el primero en registrar de dónde nos visitas.
-      </p>
-    `;
-    return;
-  }
-
-  contenedor.innerHTML = "";
-  visitantes.forEach(function(item) {
-    contenedor.innerHTML += `
-      <div class="visitor-tag">
-        <span>🌍 ${item.origen}</span>
-        <span style="color:var(--text-soft); font-size:.75rem;">${item.tiempo}</span>
-      </div>
-    `;
-  });
-}
-
-
-/* =====================================================
-   INTENCIONES
-===================================================== */
-
-function publicarIntencion() {
-  const input = document.getElementById("input-intencion");
-  const texto = input.value.trim();
-
-  if (!texto) {
-    alert("Por favor escribe una intención antes de publicar.");
-    return;
-  }
-
-  let intenciones = JSON.parse(localStorage.getItem("peregrino_intenciones")) || [];
-  const usuario = obtenerUsuarioTelegram();
-
-  intenciones.unshift({
-    texto: texto,
-    autor: usuario.nombre || "Peregrino Anónimo",
-    orando: 1,
-    corazones: 1
-  });
-
-  localStorage.setItem("peregrino_intenciones", JSON.stringify(intenciones));
-  input.value = "";
-  enviarASheets("Intención", texto);
-
-  if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
-  alert("¡Tu intención ha sido publicada con éxito!");
-  cargarIntenciones();
-}
-
-function cargarIntenciones() {
-  const contenedor = document.getElementById("contenedor-lista-intenciones");
-  if (!contenedor) return;
-
-  let intenciones = JSON.parse(localStorage.getItem("peregrino_intenciones")) || [
-    { texto: "Señor, te pido por la salud de mi madre y paz en mi hogar.", autor: "Ana M.", orando: 127, corazones: 18 }
-  ];
-
-  contenedor.innerHTML = "";
-  intenciones.forEach(function(item, index) {
-    contenedor.innerHTML += `
-      <div class="intencion-card">
-        <p style="color:var(--text); margin:0 0 8px;">"${item.texto}" - <i>${item.autor}</i></p>
-        <div class="intencion-actions">
-          <span class="action-chip" onclick="reaccionarIntencion(${index},'orando')">🙏 ${item.orando} orando</span>
-          <span class="action-chip" onclick="reaccionarIntencion(${index},'corazones')">❤️ ${item.corazones}</span>
-        </div>
-      </div>
-    `;
-  });
-}
-
-function reaccionarIntencion(index, tipo) {
-  let intenciones = JSON.parse(localStorage.getItem("peregrino_intenciones")) || [];
-  if (!intenciones[index]) return;
-
-  if (tipo === "orando") intenciones[index].orando++;
-  if (tipo === "corazones") intenciones[index].corazones++;
-
-  localStorage.setItem("peregrino_intenciones", JSON.stringify(intenciones));
-  cargarIntenciones();
-}
-
-
-/* =====================================================
-   RULETA
-===================================================== */
-
 function verificarEstadoRuleta() {
   const hoy = new Date().toDateString();
-  const ultimo = localStorage.getItem("peregrino_ultimo_giro");
   const boton = document.getElementById("btnGirarRuleta");
   const texto = document.getElementById("textoEstadoRuleta");
-
   if (!boton || !texto) return;
 
-  if (ultimo === hoy) {
-    boton.disabled = true;
-    boton.style.opacity = ".5";
+  if (localStorage.getItem("peregrino_ultimo_giro") === hoy) {
+    boton.disabled = true; boton.style.opacity = ".5";
     texto.innerText = "Ya giraste la ruleta hoy. Vuelve mañana.";
   } else {
-    boton.disabled = false;
-    boton.style.opacity = "1";
+    boton.disabled = false; boton.style.opacity = "1";
     texto.innerText = "¡Tienes 1 giro disponible hoy!";
   }
 }
 
-let premioGanadoTemp = "";
+const catalogoPremiosRuleta = [
+  { nombre: "🏆 Insignia 7 Días", enlace: "https://drive.google.com/uc?export=view&id=1R7sf4BVZLM2GpfXxq5LDKzCr_ADpc_Ib", img: "https://drive.google.com/uc?export=view&id=1R7sf4BVZLM2GpfXxq5LDKzCr_ADpc_Ib" },
+  { nombre: "🏆 Insignia 14 Días", enlace: "https://drive.google.com/uc?export=view&id=1wVfmxiLLaBBHJAPQnNcU9Z2Yj7TaVukN", img: "https://drive.google.com/uc?export=view&id=1wVfmxiLLaBBHJAPQnNcU9Z2Yj7TaVukN" },
+  { nombre: "🏆 Insignia 21 Días", enlace: "https://drive.google.com/uc?export=view&id=1dXoolPI-lcsvmxb7k8AqYYKqvgmjvAI7", img: "https://drive.google.com/uc?export=view&id=1dXoolPI-lcsvmxb7k8AqYYKqvgmjvAI7" },
+  { nombre: "🏆 Insignia 40 Días", enlace: "https://drive.google.com/uc?export=view&id=1TRK7YWO4efEgI_9Un7GzLPYBl_Hr2zui", img: "https://drive.google.com/uc?export=view&id=1TRK7YWO4efEgI_9Un7GzLPYBl_Hr2zui" }
+];
+
+let premioSeleccionado = null;
 
 function girarRuleta() {
-  const hoy = new Date().toDateString();
-  localStorage.setItem("peregrino_ultimo_giro", hoy);
+  localStorage.setItem("peregrino_ultimo_giro", new Date().toDateString());
   verificarEstadoRuleta();
 
   const ruleta = document.getElementById("ruletaCirculo");
-  const grados = 1080 + Math.floor(Math.random() * 360);
-  ruleta.style.transform = "rotate(" + grados + "deg)";
-
+  ruleta.style.transform = "rotate(" + (1080 + Math.floor(Math.random() * 360)) + "deg)";
   if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred("medium");
 
-  setTimeout(function() {
-    const gano = Math.random() < .01;
+  setTimeout(() => {
+    const gano = Math.random() < 0.30; // 30% de probabilidad de ganar
 
     if (gano) {
-      premioGanadoTemp = "🖼️ Wallpaper Exclusivo de Inspiración";
-      lanzarModalPremio("¡Felicidades!", "¡Has ganado el premio mayor!", "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300");
-      enviarASheets("Ruleta", "Ganó premio mayor");
+      premioSeleccionado = catalogoPremiosRuleta[Math.floor(Math.random() * catalogoPremiosRuleta.length)];
+      
+      lanzarModalPremio("¡Ganaste una insignia!", premioSeleccionado.nombre, premioSeleccionado.img);
+      agregarRegaloRuleta(premioSeleccionado.nombre, premioSeleccionado.enlace);
+      enviarASheets("Ruleta", "Ganó: " + premioSeleccionado.nombre);
+      
+      if (typeof confetti === "function") confetti({ particleCount:100, spread:80, origin:{y:.6} });
     } else {
-      premioGanadoTemp = "";
-      lanzarModalPremio("¡Sigue intentando!", "Casi lo logras. Vuelve mañana para otro intento.", "https://images.unsplash.com/photo-1448375240586-882707db888b?w=300");
+      lanzarModalPremio("¡Sigue intentando!", "Hoy no hubo suerte. ¡Vuelve mañana para otro intento!", "https://images.unsplash.com/photo-1448375240586-882707db888b?w=300");
       enviarASheets("Ruleta", "No ganó");
     }
   }, 3000);
@@ -1351,90 +791,13 @@ function lanzarModalPremio(titulo, descripcion, imagen) {
   document.getElementById("descPremio").innerText = descripcion;
   document.getElementById("imgPremio").src = imagen;
   document.getElementById("modalPremio").style.display = "flex";
-
-  if (titulo.includes("Felicidades")) {
-    if (typeof confetti === "function") confetti({ particleCount:100, spread:80, origin:{y:.6} });
-    agregarRegalo(premioGanadoTemp);
-  }
 }
-
-function cerrarModalPremio() {
-  document.getElementById("modalPremio").style.display = "none";
-}
-
+function cerrarModalPremio() { document.getElementById("modalPremio").style.display = "none"; }
 
 /* =====================================================
-   SENDERO
+   SENDERO Y AUDIO
 ===================================================== */
-
-let temporizadorIntervalo = null;
-const FASES_TEXTOS = [
-  "Etapa 1: Silencio y Desconexión (2 min)",
-  "Etapa 2: Lectura y Meditación (2 min)",
-  "Etapa 3: Petición y Súplica (2 min)",
-  "Etapa 4: Agradecimiento y Paz (2 min)"
-];
-
-function iniciarSenderoPeregrino() {
-  if (temporizadorIntervalo) return;
-
-  let tiempo = 120;
-  let etapa = 0;
-
-  const reloj = document.getElementById("reloj-peregrino");
-  const instruccion = document.getElementById("instruccion-peregrino");
-  const boton = document.getElementById("btn-iniciar-reloj");
-
-  boton.disabled = true;
-  boton.style.opacity = ".6";
-  boton.innerText = "En meditación profunda...";
-  actualizarIconosFase(0);
-  instruccion.innerText = FASES_TEXTOS[0];
-
-  temporizadorIntervalo = setInterval(function() {
-    tiempo--;
-    const minutos = Math.floor(tiempo / 60);
-    const segundos = tiempo % 60;
-    reloj.innerText = String(minutos).padStart(2,"0") + ":" + String(segundos).padStart(2,"0");
-
-    if (tiempo <= 0) {
-      etapa++;
-      if (etapa > 3) {
-        clearInterval(temporizadorIntervalo);
-        temporizadorIntervalo = null;
-        reloj.innerText = "00:00";
-        instruccion.innerText = "✨ ¡Has completado los 8 minutos de tu Sendero!";
-        boton.innerText = "¡Recorrido Finalizado! 🙏";
-        boton.style.background = "#7c9885";
-
-        if (typeof confetti === "function") confetti({ particleCount:100, spread:80, origin:{y:.6} });
-        enviarASheets("Sendero del Peregrino", "Completó los 8 minutos");
-        return;
-      }
-      tiempo = 120;
-      actualizarIconosFase(etapa);
-      instruccion.innerText = FASES_TEXTOS[etapa];
-    }
-  }, 1000);
-}
-
-function actualizarIconosFase(indice) {
-  for (let i=0; i<4; i++) {
-    const icono = document.getElementById("icon-step-" + i);
-    if (!icono) continue;
-    if (i === indice) icono.classList.add("active");
-    else icono.classList.remove("active");
-  }
-}
-
-
-/* =====================================================
-   AUDIO
-===================================================== */
-
-let music = null;
-let audioStatus = null;
-let audioBtn = null;
+let music = null; let audioStatus = null; let audioBtn = null;
 
 function iniciarAudio() {
   music = document.getElementById("bg-music");
@@ -1445,21 +808,99 @@ function iniciarAudio() {
 function toggleAudio() {
   if (!music) iniciarAudio();
   if (!music) return;
-
   if (music.paused) {
-    music.play().then(function() {
+    music.play().then(() => {
       if (audioBtn) audioBtn.innerText = "Pausar";
       if (audioStatus) audioStatus.innerText = "🎵 Música: Reproduciendo";
-    }).catch(function() {
-      alert("Toca nuevamente para permitir la reproducción de audio.");
-    });
+    }).catch(() => alert("Toca nuevamente para permitir la reproducción de audio."));
   } else {
     music.pause();
     if (audioBtn) audioBtn.innerText = "Reproducir";
     if (audioStatus) audioStatus.innerText = "🎵 Música: Pausada";
   }
 }
-</script>
 
+let temporizadorIntervalo = null;
+const FASES_TEXTOS = ["Etapa 1: Silencio y Desconexión (2 min)","Etapa 2: Lectura y Meditación (2 min)","Etapa 3: Petición y Súplica (2 min)","Etapa 4: Agradecimiento y Paz (2 min)"];
+
+function iniciarSenderoPeregrino() {
+  if (temporizadorIntervalo) return;
+  let tiempo = 120; let etapa = 0;
+  const reloj = document.getElementById("reloj-peregrino"), instruccion = document.getElementById("instruccion-peregrino"), boton = document.getElementById("btn-iniciar-reloj");
+
+  boton.disabled = true; boton.style.opacity = ".6"; boton.innerText = "En meditación...";
+  for(let i=0;i<4;i++) { document.getElementById("icon-step-"+i).classList.toggle("active", i===0); }
+  instruccion.innerText = FASES_TEXTOS[0];
+
+  temporizadorIntervalo = setInterval(() => {
+    tiempo--;
+    reloj.innerText = String(Math.floor(tiempo/60)).padStart(2,"0") + ":" + String(tiempo%60).padStart(2,"0");
+    if (tiempo <= 0) {
+      etapa++;
+      if (etapa > 3) {
+        clearInterval(temporizadorIntervalo); temporizadorIntervalo = null;
+        reloj.innerText = "00:00"; instruccion.innerText = "✨ ¡Has completado los 8 minutos de tu Sendero!";
+        boton.innerText = "¡Recorrido Finalizado! 🙏"; boton.style.background = "#7c9885";
+        if (typeof confetti === "function") confetti({ particleCount:100, spread:80, origin:{y:.6} });
+        enviarASheets("Sendero del Peregrino", "Completó los 8 minutos");
+        return;
+      }
+      tiempo = 120; instruccion.innerText = FASES_TEXTOS[etapa];
+      for(let i=0;i<4;i++) { document.getElementById("icon-step-"+i).classList.toggle("active", i===etapa); }
+    }
+  }, 1000);
+}
+
+/* =====================================================
+   VISITANTES E INTENCIONES
+===================================================== */
+function registrarOrigen() {
+  const val = document.getElementById("input-origen").value.trim();
+  if (!val) return;
+  let v = JSON.parse(localStorage.getItem("peregrino_visitantes")) || [];
+  v.unshift({ origen: val, tiempo: "Justo ahora" });
+  localStorage.setItem("peregrino_visitantes", JSON.stringify(v));
+  document.getElementById("input-origen").value = "";
+  cargarVisitantes();
+  enviarASheets("Origen Peregrino", val);
+}
+
+function cargarVisitantes() {
+  const c = document.getElementById("contenedor-visitantes");
+  if (!c) return;
+  const v = JSON.parse(localStorage.getItem("peregrino_visitantes")) || [];
+  if (v.length === 0) return c.innerHTML = `<p style="font-size:.8rem; text-align:center; color:var(--text-soft); margin:5px 0;">Sé el primero en registrar de dónde nos visitas.</p>`;
+  c.innerHTML = v.map(i => `<div class="visitor-tag"><span>🌍 ${i.origen}</span><span style="color:var(--text-soft); font-size:.75rem;">${i.tiempo}</span></div>`).join("");
+}
+
+function publicarIntencion() {
+  const val = document.getElementById("input-intencion").value.trim();
+  if (!val) return alert("Por favor escribe una intención.");
+  const u = obtenerUsuarioTelegram();
+  let i = JSON.parse(localStorage.getItem("peregrino_intenciones")) || [];
+  i.unshift({ texto: val, autor: u.nombre || "Anónimo", orando: 1, corazones: 1 });
+  localStorage.setItem("peregrino_intenciones", JSON.stringify(i));
+  document.getElementById("input-intencion").value = "";
+  enviarASheets("Intención", val);
+  if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
+  alert("¡Tu intención ha sido publicada!");
+  cargarIntenciones();
+}
+
+function cargarIntenciones() {
+  const c = document.getElementById("contenedor-lista-intenciones");
+  if (!c) return;
+  const i = JSON.parse(localStorage.getItem("peregrino_intenciones")) || [{ texto: "Señor, te pido por la salud de mi madre.", autor: "Ana M.", orando: 127, corazones: 18 }];
+  c.innerHTML = i.map((item, idx) => `<div class="intencion-card"><p style="color:var(--text); margin:0 0 8px;">"${item.texto}" - <i>${item.autor}</i></p><div class="intencion-actions"><span class="action-chip" onclick="reaccionarIntencion(${idx},'orando')">🙏 ${item.orando} orando</span><span class="action-chip" onclick="reaccionarIntencion(${idx},'corazones')">❤️ ${item.corazones}</span></div></div>`).join("");
+}
+
+function reaccionarIntencion(idx, t) {
+  let i = JSON.parse(localStorage.getItem("peregrino_intenciones")) || [];
+  if (!i[idx]) return;
+  i[idx][t]++;
+  localStorage.setItem("peregrino_intenciones", JSON.stringify(i));
+  cargarIntenciones();
+}
+</script>
 </body>
 </html>
