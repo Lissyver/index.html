@@ -449,8 +449,9 @@ textarea {
     <button id="audioBtn" onclick="toggleAudio()" style="background:var(--accent);border:none;color:#15120e;padding:6px 14px;border-radius:15px;font-weight:bold;cursor:pointer;font-size:.8rem;">Reproducir</button>
   </div>
 
+  <!-- NUEVO AUDIO AMBIENTAL RELAJANTE TIPO MEDITACIÓN -->
   <audio id="bg-music" loop preload="auto">
-    <source src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" type="audio/mpeg">
+    <source src="https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=meditation-flute-and-water-110904.mp3" type="audio/mpeg">
   </audio>
 
   <div class="peregrino-iconos-grid">
@@ -510,7 +511,7 @@ textarea {
 /* =====================================================
    CONFIGURACIÓN PRINCIPAL
 ===================================================== */
-const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbzhH98vWYHVshdZ82b0cDXpd8QvvFiWGGQzqqs2p9dTmizZrmI441_inUkMdYxFyoacnw/exec";
+const URL_GOOGLE_SCRIPT = "AQUÍ_LA_URL_NUEVA_DE_APPS_SCRIPT";
 
 const CLAVE_RACHA = "cada_dia_con_dios_racha_v2";
 
@@ -686,7 +687,7 @@ function enviarASheets(tipoDato, detalleDato) {
 }
 
 /* =====================================================
-   REGALOS Y PREMIOS DE RACHA (CON TUS ENLACES REALES)
+   REGALOS Y PREMIOS DE RACHA
 ===================================================== */
 function actualizarRegalosDesdeServidor(estado) {
   if (!estado) return;
@@ -734,7 +735,7 @@ function cargarRegalos() {
 }
 
 /* =====================================================
-   RULETA (4 PREMIOS CON TUS INSIGNIAS REALES)
+   RULETA
 ===================================================== */
 function verificarEstadoRuleta() {
   const hoy = new Date().toDateString();
@@ -769,7 +770,7 @@ function girarRuleta() {
   if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred("medium");
 
   setTimeout(() => {
-    const gano = Math.random() < 0.30; // 30% de probabilidad de ganar
+    const gano = Math.random() < 0.30; 
 
     if (gano) {
       premioSeleccionado = catalogoPremiosRuleta[Math.floor(Math.random() * catalogoPremiosRuleta.length)];
