@@ -223,22 +223,57 @@ p,label {
 .ruleta-container {
   text-align:center;
   position:relative;
-  margin:20px 0;
+  margin:25px auto;
+  width:200px;
+  height:200px;
+}
+
+.ruleta-puntero {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 22px solid var(--accent);
+  z-index: 20;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
 }
 
 .ruleta-circulo {
-  width:180px;
-  height:180px;
-  border:6px solid var(--accent);
-  border-radius:50%;
-  margin:0 auto;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:3.5rem;
-  background:var(--bg-grad-2);
-  box-shadow:0 0 20px var(--accent-glow);
-  transition:transform 3s cubic-bezier(.15,.9,.2,1);
+  width: 200px;
+  height: 200px;
+  border: 6px solid var(--accent);
+  border-radius: 50%;
+  margin: 0 auto;
+  position: relative;
+  background: conic-gradient(
+    #d99b4e 0deg 90deg, 
+    #2a2218 90deg 180deg, 
+    #d99b4e 180deg 270deg, 
+    #2a2218 270deg 360deg
+  );
+  box-shadow: 0 0 25px var(--accent-glow);
+  transition: transform 3s cubic-bezier(.15,.9,.2,1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ruleta-centro {
+  width: 55px;
+  height: 55px;
+  background: var(--card-bg);
+  border: 3px solid var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  z-index: 10;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
 }
 
 .peregrino-iconos-grid {
@@ -393,7 +428,7 @@ textarea {
   <h2>▶ Video del Día</h2>
   <p><b>DIOS TE DICE HOY: RECOMPENSARÉ TUS AÑOS MALOS CON ALEGRÍA | SALMO 90</b></p>
   <div style="position:relative;width:100%;padding-bottom:177.77%;height:0;background:#000;border-radius:12px;overflow:hidden;margin-top:12px;">
-    <iframe src="https://www.youtube.com/embed/8w-acFs_xhY" title="Video del Día" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe src="https://www.youtube.com/embed/JNH2ef1a220" title="Video del Día" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
   </div>
 </div>
 
@@ -430,10 +465,17 @@ textarea {
 <div id="sec-ruleta" class="section">
   <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
   <h2>🎡 Ruleta Ganadora</h2>
-  <p>Gira la ruleta una vez al día y prueba tu fortuna.</p>
+  <p>Gira la ruleta una vez al día y descubre tu bendición.</p>
+  
   <div class="ruleta-container">
-    <div id="ruletaCirculo" class="ruleta-circulo">🎯</div>
+    <div class="ruleta-puntero"></div>
+    <div id="ruletaCirculo" class="ruleta-circulo">
+      <div style="position:absolute; top:20px; font-size:0.65rem; font-weight:bold; color:var(--accent); letter-spacing:1px;">PREMIO</div>
+      <div style="position:absolute; bottom:20px; font-size:0.65rem; font-weight:bold; color:var(--accent); letter-spacing:1px;">PREMIO</div>
+      <div class="ruleta-centro">🎁</div>
+    </div>
   </div>
+
   <button class="main-btn" id="btnGirarRuleta" onclick="girarRuleta()">¡Girar la Ruleta!</button>
   <p id="textoEstadoRuleta" style="text-align:center;font-size:.8rem;margin-top:8px;"></p>
 </div>
@@ -729,7 +771,7 @@ function cargarRegalos() {
 }
 
 /* =====================================================
-   RULETA
+   RULETA CON SONIDO MECÁNICO Y DISEÑO VISTOSO
 ===================================================== */
 function verificarEstadoRuleta() {
   const hoy = new Date().toDateString();
@@ -755,13 +797,45 @@ const catalogoPremiosRuleta = [
 
 let premioSeleccionado = null;
 
+function reproducirSonidoRuleta() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(900, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.04);
+    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.04);
+  } catch(e) {}
+}
+
 function girarRuleta() {
   localStorage.setItem("peregrino_ultimo_giro", new Date().toDateString());
   verificarEstadoRuleta();
 
   const ruleta = document.getElementById("ruletaCirculo");
-  ruleta.style.transform = "rotate(" + (1080 + Math.floor(Math.random() * 360)) + "deg)";
+  const vueltasExtra = 1080 + Math.floor(Math.random() * 360);
+  ruleta.style.transform = "rotate(" + vueltasExtra + "deg)";
   if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred("medium");
+
+  // Bucle de sonido mecánico de la ruleta desacelerando
+  let tiempoTotal = 3000;
+  let intervalo = 60;
+  let tiempoTranscurrido = 0;
+  
+  let timerSonido = setInterval(() => {
+    reproducirSonidoRuleta();
+    tiempoTranscurrido += intervalo;
+    intervalo += 35; // Simula la desaceleración gradual
+    if (tiempoTranscurrido >= tiempoTotal) {
+      clearInterval(timerSonido);
+    }
+  }, intervalo);
 
   setTimeout(() => {
     const gano = Math.random() < 0.30; 
@@ -790,7 +864,7 @@ function lanzarModalPremio(titulo, descripcion, imagen) {
 function cerrarModalPremio() { document.getElementById("modalPremio").style.display = "none"; }
 
 /* =====================================================
-   SENDERO Y AUDIO NATIVO RELAJANTE (SIN ARCHIVOS EXTERNOS)
+   SENDERO Y AUDIO NATIVO RELAJANTE
 ===================================================== */
 let audioCtx = null;
 let oscilador1 = null;
@@ -807,19 +881,16 @@ function toggleAudio() {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       audioCtx = new AudioContext();
 
-      // Creamos dos osciladores para generar un acorde armónico profundo tipo cuenco tibetano
       oscilador1 = audioCtx.createOscillator();
       oscilador2 = audioCtx.createOscillator();
       gananciaNode = audioCtx.createGain();
 
-      // Frecuencias suaves y angelicales (acorde pacífico)
       oscilador1.type = 'sine';
-      oscilador1.frequency.setValueAtTime(174.61, audioCtx.currentTime); // Nota F3 (relajación profunda)
+      oscilador1.frequency.setValueAtTime(174.61, audioCtx.currentTime);
 
       oscilador2.type = 'sine';
-      oscilador2.frequency.setValueAtTime(261.63, audioCtx.currentTime); // Nota C4 (armonía)
+      oscilador2.frequency.setValueAtTime(261.63, audioCtx.currentTime);
 
-      // Volumen muy suave y envolvente
       gananciaNode.gain.setValueAtTime(0.02, audioCtx.currentTime);
 
       oscilador1.connect(gananciaNode);
