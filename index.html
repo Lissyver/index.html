@@ -528,6 +528,8 @@ textarea {
   <button class="back-btn" onclick="showMenu()">← Volver al menú</button>
   <h2>❤ Apoya este Ministerio</h2>
   <p style="line-height:1.5;">Si gustas colaborar con el canal para seguir llevándoles gratis la palabra, puedes hacerlo a través de nuestros enlaces oficiales.<br><br>También puedes colaborar adquiriendo nuestros productos en la sección de la <b>Tienda</b>.</p>
+  
+  <a href="https://ko-fi.com/septimoplano" target="_blank" class="main-btn" style="background:#29abe0;color:white;margin-bottom:12px;">Tarjeta de Crédito / Débito 💳</a>
   <a href="https://www.paypal.com/paypalme/my/profile" target="_blank" class="main-btn" style="margin-bottom:12px;background:#0070ba;color:white;">Donar con PayPal 🌐</a>
   <a href="https://app.binance.com/uni-qr/uEYB3enK" target="_blank" class="main-btn" style="background:#f0b90b;color:#15120e;">Donar con Binance 🪙</a>
 </div>
@@ -823,7 +825,6 @@ function girarRuleta() {
   ruleta.style.transform = "rotate(" + vueltasExtra + "deg)";
   if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred("medium");
 
-  // Bucle de sonido mecánico de la ruleta desacelerando
   let tiempoTotal = 3000;
   let intervalo = 60;
   let tiempoTranscurrido = 0;
@@ -831,7 +832,7 @@ function girarRuleta() {
   let timerSonido = setInterval(() => {
     reproducirSonidoRuleta();
     tiempoTranscurrido += intervalo;
-    intervalo += 35; // Simula la desaceleración gradual
+    intervalo += 35;
     if (tiempoTranscurrido >= tiempoTotal) {
       clearInterval(timerSonido);
     }
